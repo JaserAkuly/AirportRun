@@ -8,6 +8,9 @@ import FlightDepartures from "../components/flight-departures";
 import ParkingAvailability from "../components/parking-availability";
 import CongestionForecast from "../components/congestion-forecast";
 import TrafficConditions from "../components/traffic-conditions";
+import WeatherConditions from "../components/weather-conditions";
+
+import AirportAlerts from "../components/airport-alerts";
 
 import type { DashboardData } from "@shared/schema";
 
@@ -119,22 +122,30 @@ export default function Dashboard() {
           </div>
         ) : (
           <>
-            {/* Flight Departures */}
+            {/* Airport Alerts - Critical information first */}
+            <AirportAlerts data={dashboardData?.airportAlerts || []} />
+
+            {/* 12-Hour Congestion Forecast - Top Priority */}
+            <CongestionForecast data={dashboardData?.congestionForecast || []} />
+
+            {/* Current Weather Impact */}
+            <WeatherConditions data={dashboardData?.weatherConditions || []} />
+
+            {/* Parking Availability */}
+            <ParkingAvailability data={dashboardData?.parkingAvailability || []} />
+
+            {/* Traffic Conditions */}
+            <TrafficConditions data={dashboardData?.trafficConditions || []} />
+
+
+
+            {/* Next 5 Departing Flights */}
             <FlightDepartures 
               data={dashboardData?.flightDepartures || []} 
               onTimePercentage={dashboardData?.onTimePercentage || 0}
               averageDelay={dashboardData?.averageDelay || 0}
               cancellations={dashboardData?.cancellations || 0}
             />
-
-            {/* Traffic Conditions */}
-            <TrafficConditions data={dashboardData?.trafficConditions || []} />
-
-            {/* Parking Availability */}
-            <ParkingAvailability data={dashboardData?.parkingAvailability || []} />
-
-            {/* Congestion Forecast */}
-            <CongestionForecast data={dashboardData?.congestionForecast || []} />
 
 
           </>

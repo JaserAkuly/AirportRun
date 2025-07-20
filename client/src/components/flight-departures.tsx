@@ -27,15 +27,38 @@ export default function FlightDepartures({ data, onTimePercentage, averageDelay,
     }
   };
 
-  // Show first 10 flights as requested
-  const displayedFlights = data.slice(0, 10);
+  // Show first 5 flights departing in next 2-3 hours
+  const now = new Date();
+  const maxTime = new Date(now.getTime() + 3 * 60 * 60 * 1000); // 3 hours from now
+  
+  const upcomingFlights = data.filter(flight => {
+    // Parse departure time (assuming format like "2:30 PM")
+    const today = new Date();
+    const [time, period] = flight.departureTime.split(' ');
+    const [hours, minutes] = time.split(':').map(Number);
+    
+    let hour24 = hours;
+    if (period === 'PM' && hours !== 12) hour24 += 12;
+    if (period === 'AM' && hours === 12) hour24 = 0;
+    
+    const flightTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hour24, minutes);
+    
+    // If flight time is before now, assume it's tomorrow
+    if (flightTime < now) {
+      flightTime.setDate(flightTime.getDate() + 1);
+    }
+    
+    return flightTime <= maxTime;
+  });
+  
+  const displayedFlights = upcomingFlights.slice(0, 5);
 
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center">
           <PlaneTakeoff className="text-primary mr-3 h-6 w-6" />
-          Flight Departures
+          Next 5 Departing Flights
         </h2>
         <div className="text-sm text-gray-500 flex items-center">
           <RotateCcw className="mr-1 h-4 w-4" />

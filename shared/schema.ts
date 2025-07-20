@@ -82,7 +82,37 @@ export const trafficConditions = pgTable("traffic_conditions", {
 
 export type TrafficCondition = typeof trafficConditions.$inferSelect;
 
+// Weather conditions data
+export const weatherConditions = pgTable("weather_conditions", {
+  id: serial("id").primaryKey(),
+  temperature: integer("temperature").notNull(),
+  conditions: text("conditions").notNull(),
+  windSpeed: integer("wind_speed").notNull(),
+  windDirection: text("wind_direction").notNull(),
+  visibility: integer("visibility").notNull(),
+  humidity: integer("humidity").notNull(),
+  pressure: integer("pressure").notNull(),
+  flightImpact: text("flight_impact").notNull(),
+  flightImpactColor: text("flight_impact_color").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
+export type WeatherCondition = typeof weatherConditions.$inferSelect;
+
+// Airport alerts data
+export const airportAlerts = pgTable("airport_alerts", {
+  id: serial("id").primaryKey(),
+  alertId: text("alert_id").notNull(),
+  type: text("type").notNull(), // "warning", "info", "success", "error"
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  timestamp: text("timestamp").notNull(),
+  dismissible: integer("dismissible").notNull(), // 0 or 1 for boolean
+  link: text("link"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type AirportAlert = typeof airportAlerts.$inferSelect;
 
 // API response types
 export type DashboardData = {
@@ -90,6 +120,8 @@ export type DashboardData = {
   parkingAvailability: ParkingAvailability[];
   congestionForecast: CongestionForecast[];
   trafficConditions: TrafficCondition[];
+  weatherConditions: WeatherCondition[];
+  airportAlerts: AirportAlert[];
   onTimePercentage: number;
   averageDelay: number;
   cancellations: number;

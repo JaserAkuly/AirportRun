@@ -4,12 +4,16 @@ import {
   parkingAvailability, 
   congestionForecast,
   trafficConditions,
+  weatherConditions,
+  airportAlerts,
   type UserPreferences, 
   type InsertUserPreferences,
   type FlightDeparture,
   type ParkingAvailability,
   type CongestionForecast,
   type TrafficCondition,
+  type WeatherCondition,
+  type AirportAlert,
   type DashboardData
 } from "@shared/schema";
 
@@ -34,6 +38,14 @@ export interface IStorage {
   updateTrafficConditions(traffic: Omit<TrafficCondition, 'id' | 'updatedAt'>[]): Promise<void>;
   getTrafficConditions(): Promise<TrafficCondition[]>;
   
+  // Weather conditions
+  updateWeatherConditions(weather: Omit<WeatherCondition, 'id' | 'updatedAt'>[]): Promise<void>;
+  getWeatherConditions(): Promise<WeatherCondition[]>;
+  
+  // Airport alerts
+  updateAirportAlerts(alerts: Omit<AirportAlert, 'id' | 'updatedAt'>[]): Promise<void>;
+  getAirportAlerts(): Promise<AirportAlert[]>;
+  
   // Dashboard data
   getDashboardData(): Promise<DashboardData>;
 }
@@ -44,6 +56,8 @@ export class MemStorage implements IStorage {
   private parkingData: ParkingAvailability[] = [];
   private forecastData: CongestionForecast[] = [];
   private trafficData: TrafficCondition[] = [];
+  private weatherData: WeatherCondition[] = [];
+  private alertsData: AirportAlert[] = [];
   private currentId = 1;
 
   async getUserPreferences(userId: string): Promise<UserPreferences | undefined> {
@@ -116,6 +130,30 @@ export class MemStorage implements IStorage {
     return this.trafficData;
   }
 
+  async updateWeatherConditions(weather: Omit<WeatherCondition, 'id' | 'updatedAt'>[]): Promise<void> {
+    this.weatherData = weather.map(wc => ({
+      ...wc,
+      id: this.currentId++,
+      updatedAt: new Date(),
+    }));
+  }
+
+  async getWeatherConditions(): Promise<WeatherCondition[]> {
+    return this.weatherData;
+  }
+
+  async updateAirportAlerts(alerts: Omit<AirportAlert, 'id' | 'updatedAt'>[]): Promise<void> {
+    this.alertsData = alerts.map(alert => ({
+      ...alert,
+      id: this.currentId++,
+      updatedAt: new Date(),
+    }));
+  }
+
+  async getAirportAlerts(): Promise<AirportAlert[]> {
+    return this.alertsData;
+  }
+
   async getDashboardData(): Promise<DashboardData> {
     const flightDepartures = await this.getFlightDepartures();
     const onTimeFlights = flightDepartures.filter(f => f.status === "On Time").length;
@@ -133,6 +171,8 @@ export class MemStorage implements IStorage {
       parkingAvailability: await this.getParkingAvailability(),
       congestionForecast: await this.getCongestionForecast(),
       trafficConditions: await this.getTrafficConditions(),
+      weatherConditions: await this.getWeatherConditions(),
+      airportAlerts: await this.getAirportAlerts(),
       onTimePercentage,
       averageDelay,
       cancellations: cancelledFlights,

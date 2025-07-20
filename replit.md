@@ -30,23 +30,29 @@ The application follows a full-stack TypeScript architecture with a clear separa
 ## Key Components
 
 ### Data Sources and Services
-1. **TSA Service** (`server/services/tsa-api.ts`): Integrates with MyTSA API for real-time security checkpoint wait times
-2. **FlightAware Service** (`server/services/flightaware-api.ts`): Fetches live flight departure data using FlightAware AeroAPI
-3. **Parking Scraper Service** (`server/services/parking-scraper.ts`): Scrapes DFW Airport parking availability data
+1. **FlightAware Service** (`server/services/flightaware-api.ts`): Fetches live flight departure data using FlightAware AeroAPI
+2. **Parking Scraper Service** (`server/services/parking-scraper.ts`): Scrapes DFW Airport parking availability data
+3. **Traffic Service** (`server/services/traffic-api.ts`): Provides internal airport traffic and construction information
+4. **Weather Service** (`server/services/weather-api.ts`): Current weather conditions with flight operation impact
+5. **Alerts Service** (`server/services/alerts-api.ts`): Operational alerts, construction notices, and service disruptions
 
 ### Frontend Components
-1. **TSA Wait Times** (`client/src/components/tsa-wait-times.tsx`): Color-coded display of security checkpoint wait times for terminals A-E
-2. **Flight Departures** (`client/src/components/flight-departures.tsx`): Live flight status with delay information
-3. **Parking Availability** (`client/src/components/parking-availability.tsx`): Real-time parking status for terminal and remote lots
-4. **Congestion Forecast** (`client/src/components/congestion-forecast.tsx`): Predictive congestion levels for the next 12 hours
-5. **User Preferences** (`client/src/components/user-preferences.tsx`): Customizable alert settings and preferred terminals
+1. **Flight Departures** (`client/src/components/flight-departures.tsx`): Shows next 5 flights departing within 2-3 hours maximum
+2. **Parking Availability** (`client/src/components/parking-availability.tsx`): Real-time parking status for terminal and remote lots
+3. **Congestion Forecast** (`client/src/components/congestion-forecast.tsx`): 12-hour predictive congestion levels (top priority)
+4. **Traffic Conditions** (`client/src/components/traffic-conditions.tsx`): Internal airport traffic including terminal construction impacts
+5. **Weather Conditions** (`client/src/components/weather-conditions.tsx`): Current weather with flight impact assessment
+6. **Airport Alerts** (`client/src/components/airport-alerts.tsx`): Critical operational alerts and construction notices
+7. **User Preferences** (`client/src/components/user-preferences.tsx`): Customizable alert settings and preferred terminals
 
 ### Database Schema
 - **User Preferences**: Stores user-specific settings and notification preferences
-- **TSA Wait Times**: Real-time security checkpoint data with status indicators
-- **Flight Departures**: Live flight information with delay tracking
+- **Flight Departures**: Live flight information with delay tracking (limited to next 5 flights in 2-3 hours)
 - **Parking Availability**: Current parking status across different lot categories
-- **Congestion Forecast**: Predictive analytics for airport congestion patterns
+- **Congestion Forecast**: 12-hour predictive analytics for airport congestion patterns
+- **Traffic Conditions**: Internal airport traffic, construction impacts, and terminal access
+- **Weather Conditions**: Current weather with flight operation impact assessment
+- **Airport Alerts**: Operational alerts, construction notices, and service disruptions
 
 ## Data Flow
 
@@ -59,9 +65,10 @@ The application follows a full-stack TypeScript architecture with a clear separa
 ## External Dependencies
 
 ### APIs and Data Sources
-- **MyTSA API**: Official TSA wait time data (fallback data used when API unavailable)
-- **FlightAware AeroAPI**: Live flight departure information
+- **FlightAware AeroAPI**: Live flight departure information (active with API key)
 - **DFW Airport Website**: Parking availability data (scraped with fallback data)
+- **Weather APIs**: Current conditions for flight impact assessment (simulated for development)
+- **DFW Operations**: Airport alerts and construction notices (simulated for development)
 
 ### Infrastructure Services
 - **Neon Database**: Serverless PostgreSQL hosting

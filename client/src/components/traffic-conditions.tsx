@@ -38,7 +38,7 @@ export default function TrafficConditions({ data }: TrafficConditionsProps) {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center">
           <Car className="text-primary mr-3 h-6 w-6" />
-          Traffic to DFW
+          Airport Traffic & Access
         </h2>
         <div className="text-sm text-gray-500 flex items-center">
           <div className="w-2 h-2 bg-primary rounded-full mr-1" />
@@ -97,7 +97,7 @@ export default function TrafficConditions({ data }: TrafficConditionsProps) {
         <div className="p-4 bg-blue-50 border-t border-gray-100">
           <p className="text-sm text-blue-800">
             <Car className="inline mr-1 h-4 w-4" />
-            Traffic data includes construction zones and peak hour congestion patterns around DFW terminals.
+            Internal airport traffic including terminal access, construction impacts, and shuttle services within DFW.
           </p>
         </div>
       </div>
