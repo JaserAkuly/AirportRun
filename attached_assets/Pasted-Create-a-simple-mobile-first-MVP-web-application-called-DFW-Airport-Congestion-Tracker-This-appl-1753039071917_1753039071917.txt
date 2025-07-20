@@ -1,0 +1,55 @@
+Create a simple, mobile-first MVP web application called "DFW Airport Congestion Tracker." This application should display real-time congestion and predictive insights specifically for Dallas/Fort Worth International Airport (DFW), targeting frequent flyers.
+
+Key MVP Features to Include:
+
+Real-Time TSA Wait Times:
+
+Display current TSA security checkpoint wait times for each terminal (A, B, C, D, E).
+
+Clearly indicate wait times using color-coded visuals: green (short wait: under 10 min), yellow (moderate: 10-20 min), and red (long: over 20 min).
+
+Real-Time Flight Delay and Status:
+
+Show live flight delays and departure status specifically for DFW departures, refreshed at least every 5 minutes.
+
+Categorize delays visually as minimal, moderate, or severe.
+
+Real-Time Parking Availability:
+
+Display current parking availability status for each terminal's primary parking garage at DFW.
+
+Indicate availability clearly: open (green), almost full (yellow), full (red).
+
+Predictive Congestion Indicator:
+
+Provide a simple predictive model showing upcoming peak congestion hours at the airport (for the next 12 hours), helping users plan their departure effectively.
+
+Visual indicators for congestion level (Low, Medium, High).
+
+Critical Integrations & Data:
+
+TSA Wait Time Data: Integrate using the MyTSA API.
+
+Flight Delay/Status Data: Integrate using FlightAware AeroAPI or AviationStack API.
+
+Parking Data: Integrate by scraping live data from the official DFW Airport parking website (using Apify or ScrapingBee).
+
+Technical Setup Recommendations:
+
+Use Supabase for database and authentication to securely store user preferences (favorite terminals, flights).
+
+Utilize Lovable.ai (or a similar low-code platform) to quickly design a clean, user-friendly, and responsive dashboard UI.
+
+Ensure data integrations via no-code connectors or API middleware like Make.com, Zapier, or direct API connections provided by Lovable.ai.
+
+Optimize for quick load time and automatic data refresh every 5 minutes.
+
+Deliverables:
+
+A single-page, responsive dashboard view.
+
+Clear visual categorization of real-time and predictive data.
+
+Minimal but essential interactivity for personalization (e.g., select a default terminal or preferred flights).
+
+Prioritize simplicity, reliability, and clarity, ensuring users can easily understand airport congestion status at a glance.
