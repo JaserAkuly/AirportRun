@@ -1,5 +1,4 @@
-import { PlaneTakeoff, RotateCcw, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PlaneTakeoff, RotateCcw } from "lucide-react";
 import type { FlightDeparture } from "@shared/schema";
 
 interface FlightDeparturesProps {
@@ -80,15 +79,6 @@ export default function FlightDepartures({ data, onTimePercentage, averageDelay 
               </div>
             </div>
           ))}
-        </div>
-        
-        <div className="p-4 bg-gray-50 rounded-b-xl">
-          <Button
-            variant="ghost"
-            className="w-full text-center text-primary font-medium text-sm hover:text-blue-700 transition-colors"
-          >
-            View All Departures <ArrowRight className="ml-1 h-4 w-4" />
-          </Button>
         </div>
       </div>
     </section>

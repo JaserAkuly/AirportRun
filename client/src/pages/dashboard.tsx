@@ -4,11 +4,11 @@ import { Plane, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import TSAWaitTimes from "@/components/tsa-wait-times";
-import FlightDepartures from "@/components/flight-departures";
-import ParkingAvailability from "@/components/parking-availability";
-import CongestionForecast from "@/components/congestion-forecast";
-import UserPreferences from "@/components/user-preferences";
+import TSAWaitTimes from "../components/tsa-wait-times";
+import FlightDepartures from "../components/flight-departures";
+import ParkingAvailability from "../components/parking-availability";
+import CongestionForecast from "../components/congestion-forecast";
+
 import type { DashboardData } from "@shared/schema";
 
 export default function Dashboard() {
@@ -85,12 +85,24 @@ export default function Dashboard() {
                 <p className="text-xs text-gray-500">Dallas/Fort Worth Int'l</p>
               </div>
             </div>
-            <div className="text-right">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-                <span>Live</span>
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={isRefetching}
+                className="text-primary hover:text-blue-700"
+              >
+                <RefreshCw className={`mr-2 h-4 w-4 ${isRefetching ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <div className="text-right">
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                  <span>Live</span>
+                </div>
+                <p className="text-xs text-gray-400">Updated {getLastUpdatedText()}</p>
               </div>
-              <p className="text-xs text-gray-400">Updated {getLastUpdatedText()}</p>
             </div>
           </div>
         </div>
@@ -123,8 +135,7 @@ export default function Dashboard() {
             {/* Congestion Forecast */}
             <CongestionForecast data={dashboardData?.congestionForecast || []} />
 
-            {/* User Preferences */}
-            <UserPreferences />
+
           </>
         )}
       </main>

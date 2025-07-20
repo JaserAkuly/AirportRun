@@ -12,13 +12,34 @@ export class TSAService {
   
   async getTSAWaitTimes(): Promise<Omit<TSAWaitTime, 'id' | 'updatedAt'>[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/GetTSOWaitTimes.ashx?ap=DFW&output=json`);
+      const response = await fetch(`${this.baseUrl}/GetTSOWaitTimes.ashx?ap=DFW&output=json`, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (compatible; DFW-Tracker/1.0)',
+        },
+      });
       
       if (!response.ok) {
+        console.warn(`TSA API returned ${response.status}: ${response.statusText}`);
         throw new Error(`TSA API error: ${response.statusText}`);
       }
       
-      const data: TSAAPIResponse = await response.json();
+      const responseText = await response.text();
+      console.log('TSA API Response:', responseText.substring(0, 200)); // Log first 200 chars
+      
+      // Check if response is HTML (blocked/error)
+      if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
+        console.warn('TSA API returned HTML instead of JSON, likely blocked or unavailable');
+        throw new Error('TSA API returned HTML instead of JSON');
+      }
+      
+      let data: TSAAPIResponse;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.warn('Failed to parse TSA API response:', parseError);
+        throw new Error('Invalid JSON response from TSA API');
+      }
       
       // Map the response to our terminal structure
       const terminals = ['A', 'B', 'C', 'D', 'E'];

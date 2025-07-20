@@ -52,10 +52,6 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
   const currentCongestion = getCurrentCongestionLevel();
   const CurrentIcon = currentCongestion.icon;
 
-  // Find peak and evening periods from forecast
-  const peakHours = data.filter(d => d.congestionLevel === "high");
-  const eveningHours = data.filter(d => d.hour >= 21 || d.hour <= 5);
-
   const formatHour = (hour: number) => {
     if (hour === 0) return "12 AM";
     if (hour === 12) return "12 PM";

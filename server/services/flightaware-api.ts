@@ -1,19 +1,26 @@
 import { FlightDeparture } from "@shared/schema";
 
 interface FlightAwareResponse {
-  flights?: Array<{
+  departures?: Array<{
     ident: string;
-    destination?: { code: string };
+    ident_iata?: string;
+    destination?: { code?: string; city?: string; name?: string };
     scheduled_out?: string;
     estimated_out?: string;
     actual_out?: string;
     status?: string;
+    operator_iata?: string;
+    flight_number?: string;
   }>;
 }
 
 export class FlightAwareService {
-  private readonly apiKey = process.env.FLIGHTAWARE_API_KEY || process.env.VITE_FLIGHTAWARE_API_KEY || "";
+  private readonly apiKey = process.env.FLIGHTAWARE_API_KEY || "";
   private readonly baseUrl = "https://aeroapi.flightaware.com/aeroapi";
+  
+  constructor() {
+    console.log('FlightAware service initialized. API key available:', this.apiKey ? 'YES' : 'NO');
+  }
   
   async getFlightDepartures(): Promise<Omit<FlightDeparture, 'id' | 'updatedAt'>[]> {
     if (!this.apiKey) {
@@ -21,8 +28,10 @@ export class FlightAwareService {
       return this.getFallbackFlightData();
     }
     
+    console.log('FlightAware API key found, fetching live data from DFW...');
+    
     try {
-      const response = await fetch(`${this.baseUrl}/airports/KDFW/flights/departures?max_pages=1`, {
+      const response = await fetch(`${this.baseUrl}/airports/KDFW/flights/departures?max_pages=1&howMany=12`, {
         headers: {
           'x-apikey': this.apiKey,
           'Accept': 'application/json',
@@ -34,13 +43,15 @@ export class FlightAwareService {
       }
       
       const data: FlightAwareResponse = await response.json();
+      console.log('FlightAware API response received:', data.departures ? data.departures.length : 0, 'flights');
       
-      if (!data.flights || data.flights.length === 0) {
+      if (!data.departures || data.departures.length === 0) {
+        console.log('No departure data available, using fallback');
         return this.getFallbackFlightData();
       }
       
       // Process up to 8 recent departures
-      const departures: Omit<FlightDeparture, 'id' | 'updatedAt'>[] = data.flights.slice(0, 8).map(flight => {
+      const departures: Omit<FlightDeparture, 'id' | 'updatedAt'>[] = data.departures.slice(0, 8).map(flight => {
         const scheduledTime = flight.scheduled_out ? new Date(flight.scheduled_out) : new Date();
         const estimatedTime = flight.estimated_out ? new Date(flight.estimated_out) : null;
         const actualTime = flight.actual_out ? new Date(flight.actual_out) : null;
@@ -65,8 +76,8 @@ export class FlightAwareService {
         }
         
         return {
-          flightNumber: flight.ident || "Unknown",
-          destination: flight.destination?.code || "Unknown",
+          flightNumber: flight.ident_iata || flight.ident || "Unknown",
+          destination: flight.destination?.code || flight.destination?.city || "Unknown",
           departureTime: scheduledTime.toLocaleTimeString('en-US', { 
             hour: 'numeric', 
             minute: '2-digit',
