@@ -27,31 +27,8 @@ export default function FlightDepartures({ data, onTimePercentage, averageDelay,
     }
   };
 
-  // Show first 5 flights departing in next 2-3 hours
-  const now = new Date();
-  const maxTime = new Date(now.getTime() + 3 * 60 * 60 * 1000); // 3 hours from now
-  
-  const upcomingFlights = data.filter(flight => {
-    // Parse departure time (assuming format like "2:30 PM")
-    const today = new Date();
-    const [time, period] = flight.departureTime.split(' ');
-    const [hours, minutes] = time.split(':').map(Number);
-    
-    let hour24 = hours;
-    if (period === 'PM' && hours !== 12) hour24 += 12;
-    if (period === 'AM' && hours === 12) hour24 = 0;
-    
-    const flightTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hour24, minutes);
-    
-    // If flight time is before now, assume it's tomorrow
-    if (flightTime < now) {
-      flightTime.setDate(flightTime.getDate() + 1);
-    }
-    
-    return flightTime <= maxTime;
-  });
-  
-  const displayedFlights = upcomingFlights.slice(0, 5);
+  // The backend already filters to next 5 flights in 2-3 hours, so display all data
+  const displayedFlights = data;
 
   return (
     <section>

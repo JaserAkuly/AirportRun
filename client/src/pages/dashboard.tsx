@@ -122,7 +122,13 @@ export default function Dashboard() {
         ) : (
           <>
             {/* Airport Alerts - Critical information first */}
-            <AirportAlerts data={dashboardData?.airportAlerts || []} />
+            <AirportAlerts 
+              data={dashboardData?.airportAlerts || []} 
+              onDismiss={(alertId) => {
+                // In a real app, this would call an API to dismiss the alert
+                console.log(`Dismissing alert ${alertId}`);
+              }}
+            />
 
             {/* 12-Hour Congestion Forecast - Top Priority */}
             <CongestionForecast data={dashboardData?.congestionForecast || []} />

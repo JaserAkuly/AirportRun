@@ -55,8 +55,33 @@ export class FlightAwareService {
         return this.getFallbackFlightData();
       }
       
-      // Process up to 10 upcoming departures
-      const departures: Omit<FlightDeparture, 'id' | 'updatedAt'>[] = data.departures.slice(0, 10).map(flight => {
+      // Filter for flights departing within the next 2-3 hours and limit to 5
+      const now = new Date();
+      const threeHoursFromNow = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+      
+      console.log(`Filtering for departures between ${now.toISOString()} and ${threeHoursFromNow.toISOString()}`);
+      
+      const upcomingFlights = data.departures
+        .filter(flight => {
+          if (!flight.scheduled_out) return false;
+          const departureTime = new Date(flight.scheduled_out);
+          const isUpcoming = departureTime >= now && departureTime <= threeHoursFromNow;
+          if (isUpcoming) {
+            console.log(`Including flight ${flight.ident} departing at ${departureTime.toISOString()}`);
+          }
+          return isUpcoming;
+        })
+        .sort((a, b) => {
+          const timeA = a.scheduled_out ? new Date(a.scheduled_out).getTime() : 0;
+          const timeB = b.scheduled_out ? new Date(b.scheduled_out).getTime() : 0;
+          return timeA - timeB;
+        })
+        .slice(0, 5); // Limit to next 5 flights only
+      
+      console.log(`Found ${upcomingFlights.length} flights departing in next 3 hours`);
+      
+      // Process the filtered flights
+      const departures: Omit<FlightDeparture, 'id' | 'updatedAt'>[] = upcomingFlights.map(flight => {
         const scheduledTime = flight.scheduled_out ? new Date(flight.scheduled_out) : new Date();
         const estimatedTime = flight.estimated_out ? new Date(flight.estimated_out) : null;
         const actualTime = flight.actual_out ? new Date(flight.actual_out) : null;

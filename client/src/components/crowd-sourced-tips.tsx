@@ -1,6 +1,8 @@
 import { MessageCircle, Clock, Users, MapPin, Plus, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface CrowdTip {
   id: number;
@@ -18,7 +20,11 @@ interface CrowdSourcedTipsProps {
 }
 
 export default function CrowdSourcedTips({ data, onSubmitTip }: CrowdSourcedTipsProps) {
-  const [showForm, setShowForm] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [category, setCategory] = useState("");
+  const [location, setLocation] = useState("");
+  const [message, setMessage] = useState("");
+  const { toast } = useToast();
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -38,6 +44,35 @@ export default function CrowdSourcedTips({ data, onSubmitTip }: CrowdSourcedTips
     }
   };
 
+  const handleSubmit = () => {
+    if (!category || !location || !message) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all fields before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (onSubmitTip) {
+      onSubmitTip({ category, location, message });
+    }
+
+    toast({
+      title: "Tip submitted!",
+      description: "Thank you for sharing your experience with fellow travelers.",
+    });
+
+    setIsModalOpen(false);
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setCategory("");
+    setLocation("");
+    setMessage("");
+  };
+
   const recentTips = data.slice(0, 5); // Show 5 most recent tips
 
   return (
@@ -47,14 +82,76 @@ export default function CrowdSourcedTips({ data, onSubmitTip }: CrowdSourcedTips
           <MessageCircle className="text-primary mr-3 h-6 w-6" />
           Real-Time Tips from Travelers
         </h2>
-        <Button 
-          onClick={() => setShowForm(!showForm)}
-          size="sm"
-          className="flex items-center space-x-2"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Share Tip</span>
-        </Button>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            <Button 
+              size="sm"
+              className="flex items-center space-x-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Share Tip</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Share Your Airport Experience</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Category</label>
+                <select 
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                >
+                  <option value="">Select category</option>
+                  <option value="security">Security Lines</option>
+                  <option value="skylink">Skylink Train</option>
+                  <option value="amenities">Food & Shops</option>
+                  <option value="general">General</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Location</label>
+                <input 
+                  type="text" 
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g., Terminal C Gate 16"
+                  className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Your Tip</label>
+                <textarea 
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="e.g., Security line at Terminal D took 12 minutes around noon"
+                  className="w-full p-2 border border-gray-300 rounded-lg text-sm h-20 resize-none"
+                />
+              </div>
+              <div className="flex space-x-2 pt-2">
+                <Button 
+                  onClick={handleSubmit}
+                  className="flex-1"
+                  disabled={!category || !location || !message}
+                >
+                  Submit Tip
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    resetForm();
+                  }}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -94,41 +191,7 @@ export default function CrowdSourcedTips({ data, onSubmitTip }: CrowdSourcedTips
           })}
         </div>
 
-        {/* Submit Form (collapsible) */}
-        {showForm && (
-          <div className="border-t border-gray-100 p-4 bg-gray-50">
-            <h3 className="font-medium text-gray-900 mb-3">Share your experience</h3>
-            <div className="space-y-3">
-              <select className="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                <option value="">Select category</option>
-                <option value="security">Security Lines</option>
-                <option value="skylink">Skylink Train</option>
-                <option value="amenities">Food & Shops</option>
-                <option value="general">General</option>
-              </select>
-              <input 
-                type="text" 
-                placeholder="Location (e.g., Terminal C Gate 16)"
-                className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-              />
-              <textarea 
-                placeholder="Your tip (e.g., Security line at Terminal D took 12 minutes around noon)"
-                className="w-full p-2 border border-gray-300 rounded-lg text-sm h-20 resize-none"
-              />
-              <div className="flex space-x-2">
-                <Button size="sm" className="flex-1">Submit Tip</Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  onClick={() => setShowForm(false)}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+
 
         {/* Info Footer */}
         <div className="p-3 bg-blue-50 border-t border-gray-100">
