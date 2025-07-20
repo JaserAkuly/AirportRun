@@ -1,0 +1,96 @@
+import { PlaneTakeoff, RotateCcw, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { FlightDeparture } from "@shared/schema";
+
+interface FlightDeparturesProps {
+  data: FlightDeparture[];
+  onTimePercentage: number;
+  averageDelay: number;
+}
+
+export default function FlightDepartures({ data, onTimePercentage, averageDelay }: FlightDeparturesProps) {
+  const getStatusColorClass = (color: string) => {
+    switch (color) {
+      case 'success': return 'bg-success';
+      case 'warning': return 'bg-warning';
+      case 'error': return 'bg-error';
+      default: return 'bg-gray-400';
+    }
+  };
+
+  const getStatusTextColorClass = (color: string) => {
+    switch (color) {
+      case 'success': return 'text-success';
+      case 'warning': return 'text-warning';
+      case 'error': return 'text-error';
+      default: return 'text-gray-600';
+    }
+  };
+
+  // Show first 4 flights
+  const displayedFlights = data.slice(0, 4);
+
+  return (
+    <section>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+          <PlaneTakeoff className="text-primary mr-3 h-6 w-6" />
+          Flight Departures
+        </h2>
+        <div className="text-sm text-gray-500 flex items-center">
+          <RotateCcw className="mr-1 h-4 w-4" />
+          <span>Live</span>
+        </div>
+      </div>
+      
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="p-4 border-b border-gray-100">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-success bg-opacity-10 rounded-lg flex items-center justify-center">
+                <span className="text-success text-sm font-bold">{onTimePercentage}%</span>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">On Time Departures</p>
+                <p className="text-sm text-gray-500">Last hour average</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-500">Avg Delay</p>
+              <p className="font-bold text-gray-900">{averageDelay} min</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="divide-y divide-gray-100">
+          {displayedFlights.map((flight, index) => (
+            <div key={`${flight.flightNumber}-${index}`} className="p-4 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className={`w-2 h-2 rounded-full ${getStatusColorClass(flight.statusColor)}`} />
+                <div>
+                  <p className="font-semibold text-gray-900">{flight.flightNumber}</p>
+                  <p className="text-sm text-gray-500">to {flight.destination}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-gray-900">{flight.departureTime}</p>
+                <p className={`text-xs ${getStatusTextColorClass(flight.statusColor)}`}>
+                  {flight.status}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="p-4 bg-gray-50 rounded-b-xl">
+          <Button
+            variant="ghost"
+            className="w-full text-center text-primary font-medium text-sm hover:text-blue-700 transition-colors"
+          >
+            View All Departures <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
