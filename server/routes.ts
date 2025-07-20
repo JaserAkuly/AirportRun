@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { tsaService } from "./services/tsa-api";
 import { flightAwareService } from "./services/flightaware-api";
 import { parkingScraperService } from "./services/parking-scraper";
+import { trafficService } from "./services/traffic-api";
 import { insertUserPreferencesSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -22,10 +22,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/refresh", async (req, res) => {
     try {
       // Fetch data from all services concurrently
-      const [tsaWaitTimes, flightDepartures, parkingAvailability] = await Promise.all([
-        tsaService.getTSAWaitTimes(),
+      const [flightDepartures, parkingAvailability, trafficConditions] = await Promise.all([
         flightAwareService.getFlightDepartures(),
         parkingScraperService.getParkingAvailability(),
+        trafficService.getTrafficConditions(),
       ]);
 
       // Generate congestion forecast
@@ -33,10 +33,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update storage
       await Promise.all([
-        storage.updateTSAWaitTimes(tsaWaitTimes),
         storage.updateFlightDepartures(flightDepartures),
         storage.updateParkingAvailability(parkingAvailability),
         storage.updateCongestionForecast(congestionForecast),
+        storage.updateTrafficConditions(trafficConditions),
       ]);
 
       const dashboardData = await storage.getDashboardData();
@@ -81,19 +81,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setTimeout(async () => {
     try {
       console.log("Initializing data from APIs...");
-      const [tsaWaitTimes, flightDepartures, parkingAvailability] = await Promise.all([
-        tsaService.getTSAWaitTimes(),
+      const [flightDepartures, parkingAvailability, trafficConditions] = await Promise.all([
         flightAwareService.getFlightDepartures(),
         parkingScraperService.getParkingAvailability(),
+        trafficService.getTrafficConditions(),
       ]);
 
       const congestionForecast = generateCongestionForecast();
 
       await Promise.all([
-        storage.updateTSAWaitTimes(tsaWaitTimes),
         storage.updateFlightDepartures(flightDepartures),
         storage.updateParkingAvailability(parkingAvailability),
         storage.updateCongestionForecast(congestionForecast),
+        storage.updateTrafficConditions(trafficConditions),
       ]);
 
       console.log("Initial data loaded successfully");
@@ -106,19 +106,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setInterval(async () => {
     try {
       console.log("Auto-refreshing data...");
-      const [tsaWaitTimes, flightDepartures, parkingAvailability] = await Promise.all([
-        tsaService.getTSAWaitTimes(),
+      const [flightDepartures, parkingAvailability, trafficConditions] = await Promise.all([
         flightAwareService.getFlightDepartures(),
         parkingScraperService.getParkingAvailability(),
+        trafficService.getTrafficConditions(),
       ]);
 
       const congestionForecast = generateCongestionForecast();
 
       await Promise.all([
-        storage.updateTSAWaitTimes(tsaWaitTimes),
         storage.updateFlightDepartures(flightDepartures),
         storage.updateParkingAvailability(parkingAvailability),
         storage.updateCongestionForecast(congestionForecast),
+        storage.updateTrafficConditions(trafficConditions),
       ]);
 
       console.log("Data auto-refresh completed");

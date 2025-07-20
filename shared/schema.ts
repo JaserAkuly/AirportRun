@@ -7,7 +7,7 @@ export const userPreferences = pgTable("user_preferences", {
   id: serial("id").primaryKey(),
   userId: text("user_id").notNull(),
   preferredTerminal: text("preferred_terminal"),
-  tsaWaitAlerts: boolean("tsa_wait_alerts").default(true),
+  trafficAlerts: boolean("traffic_alerts").default(true),
   flightDelayAlerts: boolean("flight_delay_alerts").default(false),
   parkingAlerts: boolean("parking_alerts").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -23,18 +23,7 @@ export const insertUserPreferencesSchema = createInsertSchema(userPreferences).o
 export type InsertUserPreferences = z.infer<typeof insertUserPreferencesSchema>;
 export type UserPreferences = typeof userPreferences.$inferSelect;
 
-// TSA wait times data
-export const tsaWaitTimes = pgTable("tsa_wait_times", {
-  id: serial("id").primaryKey(),
-  terminal: text("terminal").notNull(),
-  waitTimeMinutes: integer("wait_time_minutes").notNull(),
-  status: text("status").notNull(), // "short", "moderate", "long"
-  statusColor: text("status_color").notNull(), // "success", "warning", "error"
-  loadPercentage: integer("load_percentage").notNull(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
 
-export type TSAWaitTime = typeof tsaWaitTimes.$inferSelect;
 
 // Flight departures data
 export const flightDepartures = pgTable("flight_departures", {
@@ -45,6 +34,8 @@ export const flightDepartures = pgTable("flight_departures", {
   status: text("status").notNull(), // "On Time", "Delayed", "Cancelled"
   statusColor: text("status_color").notNull(), // "success", "warning", "error"
   delayMinutes: integer("delay_minutes").default(0),
+  gate: text("gate"),
+  terminal: text("terminal"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
@@ -77,13 +68,30 @@ export const congestionForecast = pgTable("congestion_forecast", {
 
 export type CongestionForecast = typeof congestionForecast.$inferSelect;
 
+// Traffic conditions data
+export const trafficConditions = pgTable("traffic_conditions", {
+  id: serial("id").primaryKey(),
+  route: text("route").notNull(),
+  status: text("status").notNull(), // "Free Flow", "Light Traffic", "Heavy Traffic", etc.
+  statusColor: text("status_color").notNull(), // "success", "warning", "error"
+  travelTime: integer("travel_time").notNull(), // in minutes
+  normalTime: integer("normal_time").notNull(), // typical travel time in minutes
+  incidents: text("incidents").array().default([]), // array of incident descriptions
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type TrafficCondition = typeof trafficConditions.$inferSelect;
+
+
+
 // API response types
 export type DashboardData = {
-  tsaWaitTimes: TSAWaitTime[];
   flightDepartures: FlightDeparture[];
   parkingAvailability: ParkingAvailability[];
   congestionForecast: CongestionForecast[];
+  trafficConditions: TrafficCondition[];
   onTimePercentage: number;
   averageDelay: number;
+  cancellations: number;
   lastUpdated: string;
 };

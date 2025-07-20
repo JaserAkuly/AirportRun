@@ -93,6 +93,17 @@ export default function ParkingAvailability({ data }: ParkingAvailabilityProps) 
           </div>
         </div>
       </div>
+      
+      <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+        <p className="text-sm text-blue-800 flex items-center">
+          <Car className="inline mr-1 h-4 w-4" />
+          <span className="font-medium">Parking Data Sources:</span>
+          <span className="ml-1">
+            Terminal parking availability scraped from DFW.com real-time status. 
+            Express and Remote lots include shuttle schedules and current capacity from official DFW parking APIs.
+          </span>
+        </p>
+      </div>
     </section>
   );
 }

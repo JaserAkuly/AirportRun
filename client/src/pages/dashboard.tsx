@@ -4,10 +4,10 @@ import { Plane, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import TSAWaitTimes from "../components/tsa-wait-times";
 import FlightDepartures from "../components/flight-departures";
 import ParkingAvailability from "../components/parking-availability";
 import CongestionForecast from "../components/congestion-forecast";
+import TrafficConditions from "../components/traffic-conditions";
 
 import type { DashboardData } from "@shared/schema";
 
@@ -119,18 +119,19 @@ export default function Dashboard() {
           </div>
         ) : (
           <>
-            {/* TSA Wait Times */}
-            <TSAWaitTimes data={dashboardData?.tsaWaitTimes || []} />
+            {/* Flight Departures */}
+            <FlightDepartures 
+              data={dashboardData?.flightDepartures || []} 
+              onTimePercentage={dashboardData?.onTimePercentage || 0}
+              averageDelay={dashboardData?.averageDelay || 0}
+              cancellations={dashboardData?.cancellations || 0}
+            />
 
-            {/* Two-column layout for Flight Delays and Parking */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              <FlightDepartures
-                data={dashboardData?.flightDepartures || []}
-                onTimePercentage={dashboardData?.onTimePercentage || 0}
-                averageDelay={dashboardData?.averageDelay || 0}
-              />
-              <ParkingAvailability data={dashboardData?.parkingAvailability || []} />
-            </div>
+            {/* Traffic Conditions */}
+            <TrafficConditions data={dashboardData?.trafficConditions || []} />
+
+            {/* Parking Availability */}
+            <ParkingAvailability data={dashboardData?.parkingAvailability || []} />
 
             {/* Congestion Forecast */}
             <CongestionForecast data={dashboardData?.congestionForecast || []} />
@@ -146,7 +147,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row justify-between items-center">
             <div className="flex items-center space-x-4 mb-4 sm:mb-0">
               <p className="text-sm text-gray-500">
-                Data sources: <span className="font-medium">MyTSA API</span> • <span className="font-medium">FlightAware</span> • <span className="font-medium">DFW.com</span>
+                Data sources: <span className="font-medium">FlightAware API</span> • <span className="font-medium">DFW Parking</span> • <span className="font-medium">Traffic Services</span>
               </p>
             </div>
             <div className="flex items-center space-x-4">

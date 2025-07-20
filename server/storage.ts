@@ -1,15 +1,15 @@
 import { 
   userPreferences, 
-  tsaWaitTimes, 
   flightDepartures, 
   parkingAvailability, 
   congestionForecast,
+  trafficConditions,
   type UserPreferences, 
   type InsertUserPreferences,
-  type TSAWaitTime,
   type FlightDeparture,
   type ParkingAvailability,
   type CongestionForecast,
+  type TrafficCondition,
   type DashboardData
 } from "@shared/schema";
 
@@ -17,10 +17,6 @@ export interface IStorage {
   // User preferences
   getUserPreferences(userId: string): Promise<UserPreferences | undefined>;
   createOrUpdateUserPreferences(userId: string, preferences: Partial<InsertUserPreferences>): Promise<UserPreferences>;
-  
-  // TSA wait times
-  updateTSAWaitTimes(waitTimes: Omit<TSAWaitTime, 'id' | 'updatedAt'>[]): Promise<void>;
-  getTSAWaitTimes(): Promise<TSAWaitTime[]>;
   
   // Flight departures
   updateFlightDepartures(departures: Omit<FlightDeparture, 'id' | 'updatedAt'>[]): Promise<void>;
@@ -34,16 +30,20 @@ export interface IStorage {
   updateCongestionForecast(forecast: Omit<CongestionForecast, 'id' | 'updatedAt'>[]): Promise<void>;
   getCongestionForecast(): Promise<CongestionForecast[]>;
   
+  // Traffic conditions
+  updateTrafficConditions(traffic: Omit<TrafficCondition, 'id' | 'updatedAt'>[]): Promise<void>;
+  getTrafficConditions(): Promise<TrafficCondition[]>;
+  
   // Dashboard data
   getDashboardData(): Promise<DashboardData>;
 }
 
 export class MemStorage implements IStorage {
   private userPrefs: Map<string, UserPreferences> = new Map();
-  private tsaData: TSAWaitTime[] = [];
   private flightData: FlightDeparture[] = [];
   private parkingData: ParkingAvailability[] = [];
   private forecastData: CongestionForecast[] = [];
+  private trafficData: TrafficCondition[] = [];
   private currentId = 1;
 
   async getUserPreferences(userId: string): Promise<UserPreferences | undefined> {
@@ -56,7 +56,7 @@ export class MemStorage implements IStorage {
       id: existing?.id || this.currentId++,
       userId,
       preferredTerminal: preferences.preferredTerminal || existing?.preferredTerminal || null,
-      tsaWaitAlerts: preferences.tsaWaitAlerts ?? existing?.tsaWaitAlerts ?? true,
+      trafficAlerts: preferences.trafficAlerts ?? existing?.trafficAlerts ?? true,
       flightDelayAlerts: preferences.flightDelayAlerts ?? existing?.flightDelayAlerts ?? false,
       parkingAlerts: preferences.parkingAlerts ?? existing?.parkingAlerts ?? true,
       createdAt: existing?.createdAt || new Date(),
@@ -66,17 +66,7 @@ export class MemStorage implements IStorage {
     return userPref;
   }
 
-  async updateTSAWaitTimes(waitTimes: Omit<TSAWaitTime, 'id' | 'updatedAt'>[]): Promise<void> {
-    this.tsaData = waitTimes.map(wt => ({
-      ...wt,
-      id: this.currentId++,
-      updatedAt: new Date(),
-    }));
-  }
 
-  async getTSAWaitTimes(): Promise<TSAWaitTime[]> {
-    return this.tsaData;
-  }
 
   async updateFlightDepartures(departures: Omit<FlightDeparture, 'id' | 'updatedAt'>[]): Promise<void> {
     this.flightData = departures.map(fd => ({
@@ -114,23 +104,38 @@ export class MemStorage implements IStorage {
     return this.forecastData;
   }
 
+  async updateTrafficConditions(traffic: Omit<TrafficCondition, 'id' | 'updatedAt'>[]): Promise<void> {
+    this.trafficData = traffic.map(tc => ({
+      ...tc,
+      id: this.currentId++,
+      updatedAt: new Date(),
+    }));
+  }
+
+  async getTrafficConditions(): Promise<TrafficCondition[]> {
+    return this.trafficData;
+  }
+
   async getDashboardData(): Promise<DashboardData> {
     const flightDepartures = await this.getFlightDepartures();
     const onTimeFlights = flightDepartures.filter(f => f.status === "On Time").length;
     const onTimePercentage = flightDepartures.length > 0 ? Math.round((onTimeFlights / flightDepartures.length) * 100) : 0;
     
-    const delayedFlights = flightDepartures.filter(f => f.delayMinutes > 0);
+    const delayedFlights = flightDepartures.filter(f => f.delayMinutes && f.delayMinutes > 0);
     const averageDelay = delayedFlights.length > 0 
-      ? Math.round(delayedFlights.reduce((sum, f) => sum + f.delayMinutes, 0) / delayedFlights.length)
+      ? Math.round(delayedFlights.reduce((sum, f) => sum + (f.delayMinutes || 0), 0) / delayedFlights.length)
       : 0;
 
+    const cancelledFlights = flightDepartures.filter(f => f.status === "Cancelled").length;
+
     return {
-      tsaWaitTimes: await this.getTSAWaitTimes(),
       flightDepartures,
       parkingAvailability: await this.getParkingAvailability(),
       congestionForecast: await this.getCongestionForecast(),
+      trafficConditions: await this.getTrafficConditions(),
       onTimePercentage,
       averageDelay,
+      cancellations: cancelledFlights,
       lastUpdated: new Date().toISOString(),
     };
   }
