@@ -8,9 +8,8 @@ import FlightDepartures from "../components/flight-departures";
 import ParkingAvailability from "../components/parking-availability";
 import CongestionForecast from "../components/congestion-forecast";
 import TrafficConditions from "../components/traffic-conditions";
-import WeatherConditions from "../components/weather-conditions";
-
 import AirportAlerts from "../components/airport-alerts";
+import CrowdSourcedTips from "../components/crowd-sourced-tips";
 
 import type { DashboardData } from "@shared/schema";
 
@@ -128,14 +127,14 @@ export default function Dashboard() {
             {/* 12-Hour Congestion Forecast - Top Priority */}
             <CongestionForecast data={dashboardData?.congestionForecast || []} />
 
-            {/* Current Weather Impact */}
-            <WeatherConditions data={dashboardData?.weatherConditions || []} />
-
             {/* Parking Availability */}
             <ParkingAvailability data={dashboardData?.parkingAvailability || []} />
 
             {/* Traffic Conditions */}
             <TrafficConditions data={dashboardData?.trafficConditions || []} />
+
+            {/* Crowd-Sourced Tips */}
+            <CrowdSourcedTips data={dashboardData?.crowdTips || []} />
 
 
 

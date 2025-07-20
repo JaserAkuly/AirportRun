@@ -1,18 +1,18 @@
 import { AlertTriangle, Info, CheckCircle, X } from "lucide-react";
 
 interface AirportAlert {
-  id: string;
+  id: number;
   type: string; // "warning", "info", "success", "error"
   title: string;
   message: string;
   timestamp: string;
-  dismissible: boolean;
-  link?: string;
+  dismissible: number;
+  link?: string | null;
 }
 
 interface AirportAlertsProps {
   data: AirportAlert[];
-  onDismiss?: (alertId: string) => void;
+  onDismiss?: (alertId: number) => void;
 }
 
 export default function AirportAlerts({ data, onDismiss }: AirportAlertsProps) {
@@ -70,42 +70,32 @@ export default function AirportAlerts({ data, onDismiss }: AirportAlertsProps) {
         </div>
       </div>
       
-      <div className="space-y-3">
-        {data.map((alert) => {
+      <div className="space-y-2">
+        {data.slice(0, 3).map((alert) => {
           const AlertIcon = getAlertIcon(alert.type);
           
           return (
             <div
               key={alert.id}
-              className={`rounded-lg border p-4 ${getAlertColorClass(alert.type)}`}
+              className={`rounded-lg border p-3 ${getAlertColorClass(alert.type)}`}
             >
-              <div className="flex items-start space-x-3">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getAlertBgColorClass(alert.type)}`}>
-                  <AlertIcon className={`h-4 w-4 ${getAlertTextColorClass(alert.type)}`} />
+              <div className="flex items-start space-x-2">
+                <div className={`w-6 h-6 rounded flex items-center justify-center ${getAlertBgColorClass(alert.type)}`}>
+                  <AlertIcon className={`h-3 w-3 ${getAlertTextColorClass(alert.type)}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-1">{alert.title}</h3>
-                      <p className="text-sm text-gray-700 mb-2">{alert.message}</p>
+                      <h3 className="font-medium text-gray-900 text-sm mb-1">{alert.title}</h3>
+                      <p className="text-xs text-gray-700 mb-1">{alert.message}</p>
                       <p className="text-xs text-gray-500">{alert.timestamp}</p>
-                      {alert.link && (
-                        <a
-                          href={alert.link}
-                          className={`text-sm ${getAlertTextColorClass(alert.type)} hover:underline mt-2 inline-block`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Learn more →
-                        </a>
-                      )}
                     </div>
-                    {alert.dismissible && onDismiss && (
+                    {alert.dismissible === 1 && onDismiss && (
                       <button
                         onClick={() => onDismiss(alert.id)}
-                        className="ml-4 text-gray-400 hover:text-gray-600"
+                        className="ml-2 text-gray-400 hover:text-gray-600"
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-3 w-3" />
                       </button>
                     )}
                   </div>

@@ -33,16 +33,22 @@ The application follows a full-stack TypeScript architecture with a clear separa
 1. **FlightAware Service** (`server/services/flightaware-api.ts`): Fetches live flight departure data using FlightAware AeroAPI
 2. **Parking Scraper Service** (`server/services/parking-scraper.ts`): Scrapes DFW Airport parking availability data
 3. **Traffic Service** (`server/services/traffic-api.ts`): Provides internal airport traffic and construction information
-4. **Weather Service** (`server/services/weather-api.ts`): Current weather conditions with flight operation impact
-5. **Alerts Service** (`server/services/alerts-api.ts`): Operational alerts, construction notices, and service disruptions
+4. **Alerts Service** (`server/services/alerts-api.ts`): Operational alerts, construction notices, and service disruptions
+5. **Crowd Tips Service** (`server/services/crowd-tips-api.ts`): User-generated real-time experiences and tips
+
+### Future API Integrations (Planned)
+- **Qsensor API**: Customs and immigration queue tracking for international terminals
+- **SITA Wait Time API**: Live security/customs queue projections across terminals
+- **FlightLabs Airports API**: Detailed terminal amenities, gates, lounges, shops, and restaurants
+- **LoungeReview.com API**: Lounge access policies, photos, and user reviews
 
 ### Frontend Components
 1. **Flight Departures** (`client/src/components/flight-departures.tsx`): Shows next 5 flights departing within 2-3 hours maximum
 2. **Parking Availability** (`client/src/components/parking-availability.tsx`): Real-time parking status for terminal and remote lots
 3. **Congestion Forecast** (`client/src/components/congestion-forecast.tsx`): 12-hour predictive congestion levels (top priority)
 4. **Traffic Conditions** (`client/src/components/traffic-conditions.tsx`): Internal airport traffic including terminal construction impacts
-5. **Weather Conditions** (`client/src/components/weather-conditions.tsx`): Current weather with flight impact assessment
-6. **Airport Alerts** (`client/src/components/airport-alerts.tsx`): Critical operational alerts and construction notices
+5. **Airport Alerts** (`client/src/components/airport-alerts.tsx`): Critical operational alerts and construction notices (compact display)
+6. **Crowd-Sourced Tips** (`client/src/components/crowd-sourced-tips.tsx`): Real-time traveler experiences and tips with submission feature
 7. **User Preferences** (`client/src/components/user-preferences.tsx`): Customizable alert settings and preferred terminals
 
 ### Database Schema
@@ -51,8 +57,8 @@ The application follows a full-stack TypeScript architecture with a clear separa
 - **Parking Availability**: Current parking status across different lot categories
 - **Congestion Forecast**: 12-hour predictive analytics for airport congestion patterns
 - **Traffic Conditions**: Internal airport traffic, construction impacts, and terminal access
-- **Weather Conditions**: Current weather with flight operation impact assessment
-- **Airport Alerts**: Operational alerts, construction notices, and service disruptions
+- **Airport Alerts**: Operational alerts, construction notices, and service disruptions (compact display)
+- **Crowd Tips**: User-generated real-time experiences with category-based organization and helpfulness voting
 
 ## Data Flow
 

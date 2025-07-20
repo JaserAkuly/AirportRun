@@ -4,16 +4,16 @@ import {
   parkingAvailability, 
   congestionForecast,
   trafficConditions,
-  weatherConditions,
   airportAlerts,
+  crowdTips,
   type UserPreferences, 
   type InsertUserPreferences,
   type FlightDeparture,
   type ParkingAvailability,
   type CongestionForecast,
   type TrafficCondition,
-  type WeatherCondition,
   type AirportAlert,
+  type CrowdTip,
   type DashboardData
 } from "@shared/schema";
 
@@ -38,13 +38,13 @@ export interface IStorage {
   updateTrafficConditions(traffic: Omit<TrafficCondition, 'id' | 'updatedAt'>[]): Promise<void>;
   getTrafficConditions(): Promise<TrafficCondition[]>;
   
-  // Weather conditions
-  updateWeatherConditions(weather: Omit<WeatherCondition, 'id' | 'updatedAt'>[]): Promise<void>;
-  getWeatherConditions(): Promise<WeatherCondition[]>;
-  
   // Airport alerts
   updateAirportAlerts(alerts: Omit<AirportAlert, 'id' | 'updatedAt'>[]): Promise<void>;
   getAirportAlerts(): Promise<AirportAlert[]>;
+  
+  // Crowd-sourced tips
+  updateCrowdTips(tips: Omit<CrowdTip, 'id' | 'updatedAt'>[]): Promise<void>;
+  getCrowdTips(): Promise<CrowdTip[]>;
   
   // Dashboard data
   getDashboardData(): Promise<DashboardData>;
@@ -56,8 +56,8 @@ export class MemStorage implements IStorage {
   private parkingData: ParkingAvailability[] = [];
   private forecastData: CongestionForecast[] = [];
   private trafficData: TrafficCondition[] = [];
-  private weatherData: WeatherCondition[] = [];
   private alertsData: AirportAlert[] = [];
+  private crowdTipsData: CrowdTip[] = [];
   private currentId = 1;
 
   async getUserPreferences(userId: string): Promise<UserPreferences | undefined> {
@@ -130,18 +130,6 @@ export class MemStorage implements IStorage {
     return this.trafficData;
   }
 
-  async updateWeatherConditions(weather: Omit<WeatherCondition, 'id' | 'updatedAt'>[]): Promise<void> {
-    this.weatherData = weather.map(wc => ({
-      ...wc,
-      id: this.currentId++,
-      updatedAt: new Date(),
-    }));
-  }
-
-  async getWeatherConditions(): Promise<WeatherCondition[]> {
-    return this.weatherData;
-  }
-
   async updateAirportAlerts(alerts: Omit<AirportAlert, 'id' | 'updatedAt'>[]): Promise<void> {
     this.alertsData = alerts.map(alert => ({
       ...alert,
@@ -152,6 +140,18 @@ export class MemStorage implements IStorage {
 
   async getAirportAlerts(): Promise<AirportAlert[]> {
     return this.alertsData;
+  }
+
+  async updateCrowdTips(tips: Omit<CrowdTip, 'id' | 'updatedAt'>[]): Promise<void> {
+    this.crowdTipsData = tips.map(tip => ({
+      ...tip,
+      id: this.currentId++,
+      updatedAt: new Date(),
+    }));
+  }
+
+  async getCrowdTips(): Promise<CrowdTip[]> {
+    return this.crowdTipsData;
   }
 
   async getDashboardData(): Promise<DashboardData> {
@@ -171,8 +171,8 @@ export class MemStorage implements IStorage {
       parkingAvailability: await this.getParkingAvailability(),
       congestionForecast: await this.getCongestionForecast(),
       trafficConditions: await this.getTrafficConditions(),
-      weatherConditions: await this.getWeatherConditions(),
       airportAlerts: await this.getAirportAlerts(),
+      crowdTips: await this.getCrowdTips(),
       onTimePercentage,
       averageDelay,
       cancellations: cancelledFlights,

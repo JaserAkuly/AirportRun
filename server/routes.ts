@@ -4,8 +4,8 @@ import { storage } from "./storage";
 import { flightAwareService } from "./services/flightaware-api";
 import { parkingScraperService } from "./services/parking-scraper";
 import { trafficService } from "./services/traffic-api";
-import { weatherService } from "./services/weather-api";
 import { alertsService } from "./services/alerts-api";
+import { crowdTipsService } from "./services/crowd-tips-api";
 import { insertUserPreferencesSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -24,12 +24,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/refresh", async (req, res) => {
     try {
       // Fetch data from all services concurrently
-      const [flightDepartures, parkingAvailability, trafficConditions, weatherConditions, airportAlerts] = await Promise.all([
+      const [flightDepartures, parkingAvailability, trafficConditions, airportAlerts, crowdTips] = await Promise.all([
         flightAwareService.getFlightDepartures(),
         parkingScraperService.getParkingAvailability(),
         trafficService.getTrafficConditions(),
-        weatherService.getWeatherConditions(),
         alertsService.getAirportAlerts(),
+        crowdTipsService.getCrowdTips(),
       ]);
 
       // Generate congestion forecast
@@ -41,8 +41,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         storage.updateParkingAvailability(parkingAvailability),
         storage.updateCongestionForecast(congestionForecast),
         storage.updateTrafficConditions(trafficConditions),
-        storage.updateWeatherConditions(weatherConditions),
         storage.updateAirportAlerts(airportAlerts),
+        storage.updateCrowdTips(crowdTips),
       ]);
 
       const dashboardData = await storage.getDashboardData();
@@ -87,12 +87,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setTimeout(async () => {
     try {
       console.log("Initializing data from APIs...");
-      const [flightDepartures, parkingAvailability, trafficConditions, weatherConditions, airportAlerts] = await Promise.all([
+      const [flightDepartures, parkingAvailability, trafficConditions, airportAlerts, crowdTips] = await Promise.all([
         flightAwareService.getFlightDepartures(),
         parkingScraperService.getParkingAvailability(),
         trafficService.getTrafficConditions(),
-        weatherService.getWeatherConditions(),
         alertsService.getAirportAlerts(),
+        crowdTipsService.getCrowdTips(),
       ]);
 
       const congestionForecast = generateCongestionForecast();
@@ -102,8 +102,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         storage.updateParkingAvailability(parkingAvailability),
         storage.updateCongestionForecast(congestionForecast),
         storage.updateTrafficConditions(trafficConditions),
-        storage.updateWeatherConditions(weatherConditions),
         storage.updateAirportAlerts(airportAlerts),
+        storage.updateCrowdTips(crowdTips),
       ]);
 
       console.log("Initial data loaded successfully");
@@ -116,12 +116,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setInterval(async () => {
     try {
       console.log("Auto-refreshing data...");
-      const [flightDepartures, parkingAvailability, trafficConditions, weatherConditions, airportAlerts] = await Promise.all([
+      const [flightDepartures, parkingAvailability, trafficConditions, airportAlerts, crowdTips] = await Promise.all([
         flightAwareService.getFlightDepartures(),
         parkingScraperService.getParkingAvailability(),
         trafficService.getTrafficConditions(),
-        weatherService.getWeatherConditions(),
         alertsService.getAirportAlerts(),
+        crowdTipsService.getCrowdTips(),
       ]);
 
       const congestionForecast = generateCongestionForecast();
@@ -131,8 +131,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         storage.updateParkingAvailability(parkingAvailability),
         storage.updateCongestionForecast(congestionForecast),
         storage.updateTrafficConditions(trafficConditions),
-        storage.updateWeatherConditions(weatherConditions),
         storage.updateAirportAlerts(airportAlerts),
+        storage.updateCrowdTips(crowdTips),
       ]);
 
       console.log("Data auto-refresh completed");

@@ -114,14 +114,29 @@ export const airportAlerts = pgTable("airport_alerts", {
 
 export type AirportAlert = typeof airportAlerts.$inferSelect;
 
+// Crowd-sourced tips data
+export const crowdTips = pgTable("crowd_tips", {
+  id: serial("id").primaryKey(),
+  tipId: text("tip_id").notNull(),
+  category: text("category").notNull(), // "security", "skylink", "amenities", "general"
+  location: text("location").notNull(),
+  message: text("message").notNull(),
+  timePosted: text("time_posted").notNull(),
+  helpful: integer("helpful").default(0),
+  userName: text("user_name"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type CrowdTip = typeof crowdTips.$inferSelect;
+
 // API response types
 export type DashboardData = {
   flightDepartures: FlightDeparture[];
   parkingAvailability: ParkingAvailability[];
   congestionForecast: CongestionForecast[];
   trafficConditions: TrafficCondition[];
-  weatherConditions: WeatherCondition[];
   airportAlerts: AirportAlert[];
+  crowdTips: CrowdTip[];
   onTimePercentage: number;
   averageDelay: number;
   cancellations: number;
