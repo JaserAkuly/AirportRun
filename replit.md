@@ -35,6 +35,7 @@ The application follows a full-stack TypeScript architecture with a clear separa
 3. **Traffic Service** (`server/services/traffic-api.ts`): Provides internal airport traffic and construction information
 4. **Alerts Service** (`server/services/alerts-api.ts`): Operational alerts, construction notices, and service disruptions
 5. **Crowd Tips Service** (`server/services/crowd-tips-api.ts`): User-generated real-time experiences and tips
+6. **Notification Service** (`server/services/notification-service.ts`): Push notifications for significant flight delays and alerts
 
 ### Future API Integrations (Planned)
 - **Qsensor API**: Customs and immigration queue tracking for international terminals
@@ -48,8 +49,9 @@ The application follows a full-stack TypeScript architecture with a clear separa
 3. **Congestion Forecast** (`client/src/components/congestion-forecast.tsx`): 12-hour predictive congestion levels (top priority)
 4. **Traffic Conditions** (`client/src/components/traffic-conditions.tsx`): Internal airport traffic including terminal construction impacts
 5. **Airport Alerts** (`client/src/components/airport-alerts.tsx`): Critical operational alerts and construction notices (compact display)
-6. **Crowd-Sourced Tips** (`client/src/components/crowd-sourced-tips.tsx`): Real-time traveler experiences and tips with submission feature
-7. **User Preferences** (`client/src/components/user-preferences.tsx`): Customizable alert settings and preferred terminals
+6. **Crowd-Sourced Tips** (`client/src/components/crowd-sourced-tips.tsx`): Real-time traveler experiences and tips with modal submission feature
+7. **Notification Settings** (`client/src/components/notification-settings.tsx`): Push notification preferences for delay alerts and terminal preferences
+8. **Notification Hook** (`client/src/hooks/useNotifications.ts`): Browser notification API management and permission handling
 
 ### Database Schema
 - **User Preferences**: Stores user-specific settings and notification preferences
@@ -59,6 +61,8 @@ The application follows a full-stack TypeScript architecture with a clear separa
 - **Traffic Conditions**: Internal airport traffic, construction impacts, and terminal access
 - **Airport Alerts**: Operational alerts, construction notices, and service disruptions (compact display)
 - **Crowd Tips**: User-generated real-time experiences with category-based organization and helpfulness voting
+- **Notification Preferences**: User-specific delay thresholds, enabled/disabled status, and preferred terminals
+- **Notification Log**: Tracks sent notifications to prevent duplicates and maintain audit trail
 
 ## Data Flow
 
@@ -79,6 +83,8 @@ The application follows a full-stack TypeScript architecture with a clear separa
 ### Infrastructure Services
 - **Neon Database**: Serverless PostgreSQL hosting
 - **Replit**: Development and deployment platform
+- **Browser Notifications API**: Native push notifications for delay alerts
+- **Web Push Protocol**: Real-time notification delivery to users
 
 ### Key Libraries
 - **Drizzle ORM**: Type-safe database operations with PostgreSQL

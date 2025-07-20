@@ -141,6 +141,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }, 5 * 60 * 1000); // 5 minutes
 
+  // Notification preferences routes
+  app.get('/api/notification-preferences', async (req, res) => {
+    try {
+      const userId = 'demo-user'; // In a real app, this would come from auth
+      const preferences = await storage.getNotificationPreferences(userId);
+      
+      if (!preferences) {
+        // Return default preferences
+        return res.json({
+          userId,
+          delayThreshold: 30,
+          notificationsEnabled: false,
+          preferredTerminals: null,
+        });
+      }
+      
+      res.json(preferences);
+    } catch (error) {
+      console.error('Error fetching notification preferences:', error);
+      res.status(500).json({ error: 'Failed to fetch preferences' });
+    }
+  });
+
+  app.post('/api/notification-preferences', async (req, res) => {
+    try {
+      const { userId, delayThreshold, notificationsEnabled, preferredTerminals } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+      }
+
+      const preferences = await storage.upsertNotificationPreferences({
+        userId,
+        delayThreshold,
+        notificationsEnabled,
+        preferredTerminals,
+      });
+      
+      res.json(preferences);
+    } catch (error) {
+      console.error('Error saving notification preferences:', error);
+      res.status(500).json({ error: 'Failed to save preferences' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

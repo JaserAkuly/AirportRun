@@ -10,6 +10,7 @@ import CongestionForecast from "../components/congestion-forecast";
 import TrafficConditions from "../components/traffic-conditions";
 import AirportAlerts from "../components/airport-alerts";
 import CrowdSourcedTips from "../components/crowd-sourced-tips";
+import NotificationSettings from "../components/notification-settings";
 
 import type { DashboardData } from "@shared/schema";
 
@@ -88,6 +89,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <NotificationSettings />
               <Button
                 variant="ghost"
                 size="sm"

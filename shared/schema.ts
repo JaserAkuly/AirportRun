@@ -128,6 +128,40 @@ export const crowdTips = pgTable("crowd_tips", {
 });
 
 export type CrowdTip = typeof crowdTips.$inferSelect;
+export type InsertCrowdTip = typeof crowdTips.$inferInsert;
+
+// Notification preferences table
+export const notificationPreferences = pgTable("notification_preferences", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull().unique(),
+  delayThreshold: integer("delay_threshold").default(30), // minutes
+  notificationsEnabled: boolean("notifications_enabled").default(true),
+  preferredTerminals: text("preferred_terminals").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertNotificationPreferencesSchema = createInsertSchema(notificationPreferences).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type NotificationPreferences = typeof notificationPreferences.$inferSelect;
+export type InsertNotificationPreferences = z.infer<typeof insertNotificationPreferencesSchema>;
+
+// Notification log table to track sent notifications
+export const notificationLog = pgTable("notification_log", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  flightNumber: text("flight_number").notNull(),
+  delayMinutes: integer("delay_minutes").notNull(),
+  message: text("message").notNull(),
+  sentAt: timestamp("sent_at").defaultNow(),
+});
+
+export type NotificationLog = typeof notificationLog.$inferSelect;
+export type InsertNotificationLog = typeof notificationLog.$inferInsert;
 
 // API response types
 export type DashboardData = {

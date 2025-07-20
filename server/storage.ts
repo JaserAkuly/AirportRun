@@ -6,6 +6,7 @@ import {
   trafficConditions,
   airportAlerts,
   crowdTips,
+  notificationPreferences,
   type UserPreferences, 
   type InsertUserPreferences,
   type FlightDeparture,
@@ -14,7 +15,9 @@ import {
   type TrafficCondition,
   type AirportAlert,
   type CrowdTip,
-  type DashboardData
+  type DashboardData,
+  type NotificationPreferences,
+  type InsertNotificationPreferences
 } from "@shared/schema";
 
 export interface IStorage {
@@ -48,6 +51,11 @@ export interface IStorage {
   
   // Dashboard data
   getDashboardData(): Promise<DashboardData>;
+  
+  // Notification preferences
+  getNotificationPreferences(userId: string): Promise<NotificationPreferences | undefined>;
+  upsertNotificationPreferences(preferences: InsertNotificationPreferences): Promise<NotificationPreferences>;
+  getAllNotificationPreferences(): Promise<NotificationPreferences[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -58,6 +66,7 @@ export class MemStorage implements IStorage {
   private trafficData: TrafficCondition[] = [];
   private alertsData: AirportAlert[] = [];
   private crowdTipsData: CrowdTip[] = [];
+  private notificationPrefs: Map<string, NotificationPreferences> = new Map();
   private currentId = 1;
 
   async getUserPreferences(userId: string): Promise<UserPreferences | undefined> {
@@ -178,6 +187,30 @@ export class MemStorage implements IStorage {
       cancellations: cancelledFlights,
       lastUpdated: new Date().toISOString(),
     };
+  }
+
+  // Notification preferences methods
+  async getNotificationPreferences(userId: string): Promise<NotificationPreferences | undefined> {
+    return this.notificationPrefs.get(userId);
+  }
+
+  async upsertNotificationPreferences(preferences: InsertNotificationPreferences): Promise<NotificationPreferences> {
+    const existing = this.notificationPrefs.get(preferences.userId!);
+    const notificationPref: NotificationPreferences = {
+      id: existing?.id || this.currentId++,
+      userId: preferences.userId!,
+      delayThreshold: preferences.delayThreshold ?? 30,
+      notificationsEnabled: preferences.notificationsEnabled ?? true,
+      preferredTerminals: preferences.preferredTerminals ?? null,
+      createdAt: existing?.createdAt || new Date(),
+      updatedAt: new Date(),
+    };
+    this.notificationPrefs.set(preferences.userId!, notificationPref);
+    return notificationPref;
+  }
+
+  async getAllNotificationPreferences(): Promise<NotificationPreferences[]> {
+    return Array.from(this.notificationPrefs.values());
   }
 }
 
