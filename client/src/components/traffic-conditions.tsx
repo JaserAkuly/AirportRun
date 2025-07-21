@@ -90,12 +90,7 @@ export default function TrafficConditions({ data }: TrafficConditionsProps) {
           })}
         </div>
         
-        <div className="p-4 bg-blue-50 border-t border-gray-100">
-          <p className="text-sm text-blue-800">
-            <Car className="inline mr-1 h-4 w-4" />
-            Internal airport traffic including terminal access, construction impacts, and shuttle services within DFW.
-          </p>
-        </div>
+
       </div>
     </section>
   );
