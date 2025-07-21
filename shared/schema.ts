@@ -65,6 +65,7 @@ export const congestionForecast = pgTable("congestion_forecast", {
   congestionLevel: text("congestion_level").notNull(), // "low", "medium", "high"
   congestionColor: text("congestion_color").notNull(), // "success", "warning", "error"
   barHeight: integer("bar_height").notNull(), // For visualization
+  flightCount: integer("flight_count").default(0), // Number of flights during this hour
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

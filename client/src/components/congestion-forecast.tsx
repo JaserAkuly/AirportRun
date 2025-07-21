@@ -27,12 +27,18 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
     const lightestHours = sortedData.slice(0, 3);
     const heaviestHours = sortedData.slice(-3);
     
+    // Calculate flight counts for context
+    const lightFlightCount = lightestHours.reduce((sum, d) => sum + (d.flightCount || 0), 0);
+    const heavyFlightCount = heaviestHours.reduce((sum, d) => sum + (d.flightCount || 0), 0);
+    
     const lightTimes = lightestHours.map(d => formatHour(d.hour)).join(", ");
     const heavyTimes = heaviestHours.map(d => formatHour(d.hour)).join(", ");
     
     return {
       best: lightTimes,
-      avoid: heavyTimes
+      avoid: heavyTimes,
+      lightFlightCount,
+      heavyFlightCount
     };
   };
 
@@ -95,17 +101,23 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
           <div className="bg-green-50 p-4 rounded-lg">
             <div className="flex items-center mb-2">
               <Info className="h-5 w-5 text-green-600 mr-2" />
-              <span className="font-medium text-green-900">Best Travel Times</span>
+              <span className="font-medium text-green-900">Best Travel Times Today</span>
             </div>
-            <p className="text-sm text-green-800">{recommendation.best}</p>
+            <p className="text-sm text-green-800 mb-1">{recommendation.best}</p>
+            <p className="text-xs text-green-600">
+              {recommendation.lightFlightCount} total departures/arrivals during these hours
+            </p>
           </div>
           
           <div className="bg-red-50 p-4 rounded-lg">
             <div className="flex items-center mb-2">
               <Info className="h-5 w-5 text-red-600 mr-2" />
-              <span className="font-medium text-red-900">Avoid These Times</span>
+              <span className="font-medium text-red-900">Avoid These Times Today</span>
             </div>
-            <p className="text-sm text-red-800">{recommendation.avoid}</p>
+            <p className="text-sm text-red-800 mb-1">{recommendation.avoid}</p>
+            <p className="text-xs text-red-600">
+              {recommendation.heavyFlightCount} total departures/arrivals during these hours
+            </p>
           </div>
         </div>
       </div>

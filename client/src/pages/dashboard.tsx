@@ -129,7 +129,7 @@ export default function Dashboard() {
             <AirportAlerts 
               data={(dashboardData?.airportAlerts || []).filter(alert => !dismissedAlerts.has(alert.id))} 
               onDismiss={(alertId) => {
-                setDismissedAlerts(prev => new Set([...prev, alertId]));
+                setDismissedAlerts(prev => new Set(Array.from(prev).concat(alertId)));
               }}
             />
 

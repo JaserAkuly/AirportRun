@@ -258,12 +258,16 @@ async function generateCongestionForecast() {
         congestionColor = "success";
       }
       
+      // Calculate flight count for this hour (simulate based on patterns)
+      const flightCount = calculateFlightCountForHour(hour, flightData);
+      
       forecast.push({
         hour,
         date: now.toISOString().split('T')[0],
         congestionLevel,
         congestionColor,
         barHeight: congestionScore,
+        flightCount,
       });
     }
     
@@ -331,6 +335,23 @@ function analyzeTrafficConditions(trafficData: any[]): number {
   return Math.min(100, (constructionCount * 25) + (delayCount * 15) + 30);
 }
 
+// Calculate flight count for a specific hour based on patterns
+function calculateFlightCountForHour(hour: number, flightData: any[]): number {
+  // DFW typical flight patterns (departures + arrivals per hour)
+  const hourlyPatterns: { [key: number]: number } = {
+    0: 8, 1: 5, 2: 3, 3: 2, 4: 4, 5: 12,
+    6: 28, 7: 45, 8: 52, 9: 38, 10: 42, 11: 46,
+    12: 48, 13: 44, 14: 46, 15: 49, 16: 52, 17: 58,
+    18: 55, 19: 48, 20: 42, 21: 35, 22: 22, 23: 15
+  };
+  
+  // Base pattern plus some randomization
+  const baseCount = hourlyPatterns[hour] || 30;
+  const variation = Math.floor(Math.random() * 10) - 5; // ±5 flights
+  
+  return Math.max(0, baseCount + variation);
+}
+
 // Fallback basic congestion forecast
 function generateBasicCongestionForecast() {
   const now = new Date();
@@ -358,12 +379,15 @@ function generateBasicCongestionForecast() {
       barHeight = Math.floor(Math.random() * 30) + 15; // 15-45%
     }
     
+    const flightCount = calculateFlightCountForHour(hour, []);
+    
     forecast.push({
       hour,
       date: now.toISOString().split('T')[0],
       congestionLevel,
       congestionColor,
       barHeight,
+      flightCount,
     });
   }
   

@@ -87,30 +87,7 @@ export default function FlightStatistics({
         </div>
       </div>
 
-      {/* Performance Insights */}
-      <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">Performance Insights</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <div>
-              <p className="text-sm font-medium text-gray-900">On-Time Performance</p>
-              <p className="text-xs text-gray-600">
-                {onTimePercentage >= 80 ? 'Excellent' : onTimePercentage >= 70 ? 'Good' : 'Below Average'} compared to industry standard
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-3">
-            <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-            <div>
-              <p className="text-sm font-medium text-gray-900">Delay Impact</p>
-              <p className="text-xs text-gray-600">
-                {averageDelay <= 15 ? 'Minimal delays' : averageDelay <= 30 ? 'Moderate delays' : 'Significant delays'} airport-wide
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </section>
   );
 }
