@@ -139,8 +139,6 @@ export default function Dashboard() {
               <TrafficConditions data={dashboardData?.trafficConditions || []} />
             </div>
 
-
-
             {/* Flight Statistics */}
             <FlightStatistics 
               onTimePercentage={dashboardData?.onTimePercentage || 78}
@@ -156,8 +154,6 @@ export default function Dashboard() {
 
             {/* Crowd-Sourced Tips */}
             <CrowdSourcedTips data={dashboardData?.crowdTips || []} />
-
-
           </>
         )}
       </main>
