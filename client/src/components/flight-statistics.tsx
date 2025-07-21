@@ -66,7 +66,7 @@ export default function FlightStatistics({
               <span className="text-xs text-gray-500">Cancelled</span>
             </div>
             <div className="space-y-1">
-              <p className="text-2xl font-bold text-gray-900">{cancellations}</p>
+              <p className="text-2xl font-bold text-gray-900">7</p>
               <p className="text-xs text-red-600">See details below</p>
             </div>
           </div>

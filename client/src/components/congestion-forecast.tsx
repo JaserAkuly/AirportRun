@@ -54,39 +54,44 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
       </div>
       
       <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 p-6">
-        {/* Combined Flight Activity Chart */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200/50">
-            <div className="text-center">
-              <div className="text-lg font-bold text-green-700 mb-2">Best Travel Times</div>
-              <div className="text-3xl font-bold text-green-700 mb-1">177</div>
-              <div className="text-sm text-green-600 mb-2">total departures/arrivals</div>
-              <div className="text-xs text-green-500 mb-3">4AM-6AM, 10PM-12AM</div>
-              <div className="h-2 bg-green-200 rounded-full">
-                <div className="h-2 bg-green-500 rounded-full" style={{ width: '30%' }}></div>
+        {/* Horizontal Travel Times */}
+        <div className="space-y-4 mb-6">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200/50">
+            <div className="flex items-center space-x-4">
+              <div className="text-2xl font-bold text-green-700">177</div>
+              <div>
+                <div className="text-lg font-bold text-green-700">Best Travel Times</div>
+                <div className="text-sm text-green-600">4AM-6AM, 10PM-12AM</div>
               </div>
             </div>
-          </div>
-          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-4 border border-yellow-200/50">
-            <div className="text-center">
-              <div className="text-lg font-bold text-yellow-700 mb-2">Avoid These Times</div>
-              <div className="text-3xl font-bold text-yellow-700 mb-1">345</div>
-              <div className="text-sm text-yellow-600 mb-2">total departures/arrivals</div>
-              <div className="text-xs text-yellow-500 mb-3">9AM-4PM, 8PM-10PM</div>
-              <div className="h-2 bg-yellow-200 rounded-full">
-                <div className="h-2 bg-yellow-500 rounded-full" style={{ width: '65%' }}></div>
-              </div>
+            <div className="w-24 h-2 bg-green-200 rounded-full">
+              <div className="h-2 bg-green-500 rounded-full" style={{ width: '30%' }}></div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-4 border border-red-200/50">
-            <div className="text-center">
-              <div className="text-lg font-bold text-red-700 mb-2">Peak Chaos</div>
-              <div className="text-3xl font-bold text-red-700 mb-1">597</div>
-              <div className="text-sm text-red-600 mb-2">total departures/arrivals</div>
-              <div className="text-xs text-red-500 mb-3">6AM-9AM, 4PM-8PM</div>
-              <div className="h-2 bg-red-200 rounded-full">
-                <div className="h-2 bg-red-500 rounded-full" style={{ width: '100%' }}></div>
+          
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200/50">
+            <div className="flex items-center space-x-4">
+              <div className="text-2xl font-bold text-yellow-700">345</div>
+              <div>
+                <div className="text-lg font-bold text-yellow-700">Avoid These Times</div>
+                <div className="text-sm text-yellow-600">9AM-4PM, 8PM-10PM</div>
               </div>
+            </div>
+            <div className="w-24 h-2 bg-yellow-200 rounded-full">
+              <div className="h-2 bg-yellow-500 rounded-full" style={{ width: '65%' }}></div>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-red-100 rounded-lg border border-red-200/50">
+            <div className="flex items-center space-x-4">
+              <div className="text-2xl font-bold text-red-700">597</div>
+              <div>
+                <div className="text-lg font-bold text-red-700">Peak Chaos</div>
+                <div className="text-sm text-red-600">6AM-9AM, 4PM-8PM</div>
+              </div>
+            </div>
+            <div className="w-24 h-2 bg-red-200 rounded-full">
+              <div className="h-2 bg-red-500 rounded-full" style={{ width: '100%' }}></div>
             </div>
           </div>
         </div>

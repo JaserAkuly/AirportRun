@@ -6,6 +6,7 @@ import { parkingScraperService } from "./services/parking-scraper";
 import { trafficService } from "./services/traffic-api";
 import { alertsService } from "./services/alerts-api";
 import { crowdTipsService } from "./services/crowd-tips-api";
+import { weatherService } from "./services/weather-api";
 import { insertUserPreferencesSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -24,12 +25,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/refresh", async (req, res) => {
     try {
       // Fetch data from all services concurrently
-      const [flightDepartures, parkingAvailability, trafficConditions, airportAlerts, crowdTips] = await Promise.all([
+      const [flightDepartures, parkingAvailability, trafficConditions, airportAlerts, crowdTips, weatherData] = await Promise.all([
         flightAwareService.getFlightDepartures(),
         parkingScraperService.getParkingAvailability(),
         trafficService.getTrafficConditions(),
         alertsService.getAirportAlerts(),
         crowdTipsService.getCrowdTips(),
+        weatherService.getCurrentWeather(),
       ]);
 
       // Generate congestion forecast
@@ -43,6 +45,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         storage.updateTrafficConditions(trafficConditions),
         storage.updateAirportAlerts(airportAlerts),
         storage.updateCrowdTips(crowdTips),
+        storage.updateWeatherData(weatherData),
       ]);
 
       const dashboardData = await storage.getDashboardData();
@@ -110,12 +113,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setTimeout(async () => {
     try {
       console.log("Initializing data from APIs...");
-      const [flightDepartures, parkingAvailability, trafficConditions, airportAlerts, crowdTips] = await Promise.all([
+      const [flightDepartures, parkingAvailability, trafficConditions, airportAlerts, crowdTips, weatherData] = await Promise.all([
         flightAwareService.getFlightDepartures(),
         parkingScraperService.getParkingAvailability(),
         trafficService.getTrafficConditions(),
         alertsService.getAirportAlerts(),
         crowdTipsService.getCrowdTips(),
+        weatherService.getCurrentWeather(),
       ]);
 
       const congestionForecast = await generateCongestionForecast();
@@ -127,6 +131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         storage.updateTrafficConditions(trafficConditions),
         storage.updateAirportAlerts(airportAlerts),
         storage.updateCrowdTips(crowdTips),
+        storage.updateWeatherData(weatherData),
       ]);
 
       console.log("Initial data loaded successfully");

@@ -174,6 +174,7 @@ export type DashboardData = {
   trafficConditions: TrafficCondition[];
   airportAlerts: AirportAlert[];
   crowdTips: CrowdTip[];
+  weatherData?: any;
   onTimePercentage: number;
   averageDelay: number;
   cancellations: number;

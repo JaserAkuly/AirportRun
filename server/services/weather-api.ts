@@ -1,146 +1,227 @@
-// Weather service to provide DFW airport weather conditions and flight impacts
+interface WeatherCondition {
+  id: string;
+  type: 'clear' | 'rain' | 'thunderstorm' | 'snow' | 'fog' | 'wind';
+  severity: 'low' | 'moderate' | 'high' | 'severe';
+  title: string;
+  description: string;
+  temperature: number;
+  humidity: number;
+  windSpeed: number;
+  windDirection: string;
+  visibility: number;
+  flightImpact: 'none' | 'minimal' | 'moderate' | 'significant' | 'severe';
+  impactDescription: string;
+  timestamp: string;
+}
+
+interface WeatherForecast {
+  current: WeatherCondition;
+  hourly: WeatherCondition[];
+  alerts: WeatherAlert[];
+}
+
+interface WeatherAlert {
+  id: string;
+  type: 'advisory' | 'watch' | 'warning' | 'emergency';
+  title: string;
+  description: string;
+  validUntil: string;
+  flightImpact: string;
+}
+
 export class WeatherService {
-  async getWeatherConditions(): Promise<any[]> {
+  private apiKey: string | undefined;
+
+  constructor() {
+    this.apiKey = process.env.OPENWEATHER_API_KEY;
+  }
+
+  async getCurrentWeather(): Promise<WeatherForecast> {
     try {
-      // In a real implementation, this would call weather APIs like OpenWeatherMap, WeatherAPI, or NOAA
-      // For now, we'll provide realistic weather data for DFW area
-
+      // If we have an API key, we could fetch real weather data
+      // For now, we'll simulate realistic DFW weather conditions
+      
       const currentHour = new Date().getHours();
+      const currentConditions = this.generateRealisticWeather(currentHour);
       
-      // Simulate different weather conditions based on time/season
-      const conditions = [
-        {
-          temperature: this.getRealisticTemperature(),
-          conditions: this.getCurrentConditions(),
-          windSpeed: Math.floor(Math.random() * 15) + 5, // 5-20 mph typical for DFW
-          windDirection: this.getWindDirection(),
-          visibility: this.getVisibility(),
-          humidity: Math.floor(Math.random() * 30) + 40, // 40-70%
-          pressure: Math.floor(Math.random() * 50) + 2980, // 29.80-30.30 inHg
-          flightImpact: this.getFlightImpact(),
-          flightImpactColor: this.getFlightImpactColor()
-        }
-      ];
-
-      return conditions;
+      return {
+        current: currentConditions,
+        hourly: this.generateHourlyForecast(),
+        alerts: this.generateWeatherAlerts(currentConditions)
+      };
     } catch (error) {
-      console.error("Error fetching weather conditions:", error);
-      
-      // Return fallback weather data
-      return [
-        {
-          temperature: 75,
-          conditions: "Clear",
-          windSpeed: 8,
-          windDirection: "SW",
-          visibility: 10,
-          humidity: 55,
-          pressure: 3010,
-          flightImpact: "No weather-related delays expected",
-          flightImpactColor: "success"
-        }
-      ];
+      console.error('Error fetching weather data:', error);
+      return this.getFallbackWeather();
     }
   }
 
-  private getRealisticTemperature(): number {
-    const month = new Date().getMonth();
-    const hour = new Date().getHours();
-    
-    // DFW seasonal temperature ranges
-    const seasonalAvg = [
-      52, 58, 66, 76, 84, 92, 96, 95, 88, 78, 65, 55
-    ][month];
-    
-    // Daily temperature variation
-    const dailyVariation = Math.sin((hour - 6) * Math.PI / 12) * 8;
-    
-    return Math.round(seasonalAvg + dailyVariation + (Math.random() - 0.5) * 10);
-  }
-
-  private getCurrentConditions(): string {
-    const conditions = [
-      "Clear", "Partly Cloudy", "Mostly Cloudy", "Overcast",
-      "Light Rain", "Thunderstorms", "Fog", "Hazy"
-    ];
-    
-    // Weight toward more common conditions
-    const weights = [0.3, 0.25, 0.2, 0.1, 0.08, 0.04, 0.02, 0.01];
-    
-    const random = Math.random();
-    let cumulative = 0;
-    
-    for (let i = 0; i < conditions.length; i++) {
-      cumulative += weights[i];
-      if (random <= cumulative) {
-        return conditions[i];
+  private generateRealisticWeather(hour: number): WeatherCondition {
+    const weatherScenarios = [
+      // Clear conditions
+      {
+        type: 'clear' as const,
+        severity: 'low' as const,
+        title: 'Clear Skies',
+        description: 'Sunny with light winds',
+        temperature: 78,
+        humidity: 45,
+        windSpeed: 8,
+        windDirection: 'SW',
+        visibility: 10,
+        flightImpact: 'none' as const,
+        impactDescription: 'No weather-related flight impacts expected'
+      },
+      // Light rain
+      {
+        type: 'rain' as const,
+        severity: 'moderate' as const,
+        title: 'Light Rain',
+        description: 'Scattered light showers',
+        temperature: 72,
+        humidity: 85,
+        windSpeed: 12,
+        windDirection: 'SE',
+        visibility: 8,
+        flightImpact: 'minimal' as const,
+        impactDescription: 'Minor delays possible for ground operations'
+      },
+      // Thunderstorms
+      {
+        type: 'thunderstorm' as const,
+        severity: 'high' as const,
+        title: 'Thunderstorms',
+        description: 'Active thunderstorms in the area',
+        temperature: 75,
+        humidity: 90,
+        windSpeed: 25,
+        windDirection: 'W',
+        visibility: 5,
+        flightImpact: 'significant' as const,
+        impactDescription: 'Flight delays and cancellations likely due to lightning'
+      },
+      // High winds
+      {
+        type: 'wind' as const,
+        severity: 'moderate' as const,
+        title: 'Windy Conditions',
+        description: 'Strong gusty winds',
+        temperature: 82,
+        humidity: 35,
+        windSpeed: 35,
+        windDirection: 'N',
+        visibility: 10,
+        flightImpact: 'moderate' as const,
+        impactDescription: 'Crosswind landings may cause minor delays'
       }
-    }
+    ];
+
+    // Select weather based on time and random factors
+    const random = Math.random();
+    let selectedWeather;
     
-    return "Clear";
+    if (hour >= 14 && hour <= 18 && random < 0.3) {
+      // Afternoon thunderstorms are common in DFW
+      selectedWeather = weatherScenarios[2];
+    } else if (random < 0.1) {
+      selectedWeather = weatherScenarios[1]; // Rain
+    } else if (random < 0.05) {
+      selectedWeather = weatherScenarios[3]; // Wind
+    } else {
+      selectedWeather = weatherScenarios[0]; // Clear
+    }
+
+    return {
+      id: `weather-${Date.now()}`,
+      ...selectedWeather,
+      timestamp: new Date().toISOString()
+    };
   }
 
-  private getWindDirection(): string {
-    const directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", 
-                       "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  private generateHourlyForecast(): WeatherCondition[] {
+    const forecast = [];
+    const currentHour = new Date().getHours();
     
-    // DFW typically has southerly winds
-    const southWeights = ["S", "SSW", "SW", "WSW"];
-    
-    if (Math.random() < 0.6) {
-      return southWeights[Math.floor(Math.random() * southWeights.length)];
+    for (let i = 1; i <= 12; i++) {
+      const hour = (currentHour + i) % 24;
+      forecast.push({
+        ...this.generateRealisticWeather(hour),
+        id: `forecast-${hour}-${i}`
+      });
     }
     
-    return directions[Math.floor(Math.random() * directions.length)];
+    return forecast;
   }
 
-  private getVisibility(): number {
-    const hour = new Date().getHours();
+  private generateWeatherAlerts(current: WeatherCondition): WeatherAlert[] {
+    const alerts: WeatherAlert[] = [];
     
-    // Reduced visibility possible in early morning or late evening
-    if (hour < 7 || hour > 20) {
-      return Math.floor(Math.random() * 3) + 7; // 7-10 miles
+    if (current.type === 'thunderstorm') {
+      alerts.push({
+        id: 'thunderstorm-warning',
+        type: 'warning',
+        title: 'Thunderstorm Warning',
+        description: 'Active thunderstorms affecting airport operations. Ground stops may be implemented.',
+        validUntil: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+        flightImpact: 'Expect significant delays and possible cancellations'
+      });
     }
     
-    return 10; // Clear visibility most of the time
+    if (current.windSpeed > 30) {
+      alerts.push({
+        id: 'wind-advisory',
+        type: 'advisory',
+        title: 'High Wind Advisory',
+        description: 'Strong winds may affect aircraft operations and ground handling.',
+        validUntil: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
+        flightImpact: 'Possible delays for departures and arrivals'
+      });
+    }
+    
+    if (current.visibility < 6) {
+      alerts.push({
+        id: 'visibility-advisory',
+        type: 'advisory',
+        title: 'Reduced Visibility',
+        description: 'Low visibility conditions may impact flight operations.',
+        validUntil: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(),
+        flightImpact: 'Approach and departure procedures may be modified'
+      });
+    }
+    
+    return alerts;
   }
 
-  private getFlightImpact(): string {
-    const conditions = this.getCurrentConditions();
-    const windSpeed = Math.floor(Math.random() * 15) + 5;
-    const visibility = this.getVisibility();
-    
-    if (conditions.includes("Thunderstorms")) {
-      return "Severe weather delays and cancellations likely";
-    }
-    
-    if (conditions.includes("Fog") || visibility < 8) {
-      return "Reduced visibility may cause arrival/departure delays";
-    }
-    
-    if (windSpeed > 18) {
-      return "High winds may impact smaller aircraft operations";
-    }
-    
-    if (conditions.includes("Rain")) {
-      return "Light weather delays possible during precipitation";
-    }
-    
-    return "No significant weather impact on flight operations";
+  private getFallbackWeather(): WeatherForecast {
+    return {
+      current: {
+        id: 'fallback-current',
+        type: 'clear',
+        severity: 'low',
+        title: 'Weather Data Unavailable',
+        description: 'Unable to retrieve current weather conditions',
+        temperature: 75,
+        humidity: 50,
+        windSpeed: 10,
+        windDirection: 'Variable',
+        visibility: 10,
+        flightImpact: 'none',
+        impactDescription: 'Weather service temporarily unavailable',
+        timestamp: new Date().toISOString()
+      },
+      hourly: [],
+      alerts: []
+    };
   }
 
-  private getFlightImpactColor(): string {
-    const impact = this.getFlightImpact();
-    
-    if (impact.includes("Severe") || impact.includes("cancellations")) {
-      return "error";
+  getFlightImpactSeverity(impact: string): number {
+    switch (impact) {
+      case 'none': return 0;
+      case 'minimal': return 1;
+      case 'moderate': return 2;
+      case 'significant': return 3;
+      case 'severe': return 4;
+      default: return 0;
     }
-    
-    if (impact.includes("delays") || impact.includes("impact")) {
-      return "warning";
-    }
-    
-    return "success";
   }
 }
 

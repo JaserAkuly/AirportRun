@@ -12,6 +12,7 @@ import AirportAlerts from "../components/airport-alerts";
 import CrowdSourcedTips from "../components/crowd-sourced-tips";
 import FlightStatistics from "../components/flight-statistics";
 import NotificationSettings from "../components/notification-settings";
+import WeatherConditions from "../components/weather-conditions";
 
 import type { DashboardData } from "@shared/schema";
 
@@ -137,6 +138,16 @@ export default function Dashboard() {
             <div className="mb-8">
               <TrafficConditions data={dashboardData?.trafficConditions || []} />
             </div>
+
+            {/* Weather Impact */}
+            {dashboardData?.weatherData && (
+              <div className="mb-8">
+                <WeatherConditions 
+                  current={dashboardData.weatherData.current}
+                  alerts={dashboardData.weatherData.alerts || []}
+                />
+              </div>
+            )}
 
             {/* Flight Statistics */}
             <FlightStatistics 
