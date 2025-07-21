@@ -83,6 +83,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Crowd tips submission endpoint
+  app.post("/api/crowd-tips", async (req, res) => {
+    try {
+      const { category, location, message } = req.body;
+      
+      if (!category || !location || !message) {
+        return res.status(400).json({ message: "Category, location, and message are required" });
+      }
+
+      const newTip = await crowdTipsService.submitTip({
+        category,
+        location,
+        message,
+        userName: "Frequent Flyer"
+      });
+
+      res.json({ tip: newTip });
+    } catch (error) {
+      console.error("Error submitting tip:", error);
+      res.status(500).json({ message: "Failed to submit tip" });
+    }
+  });
+
   // Initialize data on server start
   setTimeout(async () => {
     try {

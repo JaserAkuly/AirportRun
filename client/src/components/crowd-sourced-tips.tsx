@@ -117,6 +117,7 @@ export default function CrowdSourcedTips({ data }: CrowdSourcedTipsProps) {
                             <SelectItem value="food">Food</SelectItem>
                             <SelectItem value="gates">Gates</SelectItem>
                             <SelectItem value="parking">Parking</SelectItem>
+                            <SelectItem value="restroom">Restroom</SelectItem>
                             <SelectItem value="transportation">Transport</SelectItem>
                             <SelectItem value="general">General</SelectItem>
                           </SelectContent>
@@ -197,15 +198,15 @@ export default function CrowdSourcedTips({ data }: CrowdSourcedTipsProps) {
             </div>
           ) : (
             <div className="divide-y divide-gray-100">
-              {tips.map((tip) => (
-                <div key={tip.tipId} className="p-4 hover:bg-gray-50 transition-colors">
+              {tips.map((tip, index) => (
+                <div key={tip.tipId || `tip-${index}`} className="p-4 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start space-x-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <MessageSquare className="h-5 w-5 text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-medium text-gray-900">{tip.userName}</span>
+                        <span className="font-medium text-gray-900">Frequent Flyer</span>
                         <span className="text-gray-500">·</span>
                         <span className="text-sm text-gray-500">{tip.timePosted}</span>
                       </div>
