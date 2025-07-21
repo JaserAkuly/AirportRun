@@ -93,7 +93,7 @@ export default function FlightStatistics({
               <Plane className="h-5 w-5 text-red-600 mr-2" />
               Today's Cancellations
             </h4>
-            <div className="space-y-3">
+            <div className="max-h-64 overflow-y-auto space-y-3">
               <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
                 <div>
                   <p className="font-medium text-gray-900">AA2847</p>
@@ -114,6 +114,34 @@ export default function FlightStatistics({
                   <p className="text-xs text-gray-600">United Airlines</p>
                 </div>
                 <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded">Crew</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">WN7890</p>
+                  <p className="text-xs text-gray-600">Southwest Airlines</p>
+                </div>
+                <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded">Maintenance</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">B61234</p>
+                  <p className="text-xs text-gray-600">JetBlue Airways</p>
+                </div>
+                <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded">Air Traffic</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">F92156</p>
+                  <p className="text-xs text-gray-600">Frontier Airlines</p>
+                </div>
+                <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded">Crew</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">NK485</p>
+                  <p className="text-xs text-gray-600">Spirit Airlines</p>
+                </div>
+                <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded">Weather</span>
               </div>
             </div>
           </div>
