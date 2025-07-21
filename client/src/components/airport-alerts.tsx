@@ -66,7 +66,7 @@ export default function AirportAlerts({ data, onDismiss }: AirportAlertsProps) {
         return (
           <div
             key={alert.id}
-            className={`rounded-lg border p-4 shadow-sm ${getAlertColorClass(alert.type)} 
+            className={`rounded-xl border p-4 shadow-lg backdrop-blur-sm ${getAlertColorClass(alert.type)} 
                        animate-in slide-in-from-top-2 duration-300`}
           >
             <div className="flex items-start justify-between">

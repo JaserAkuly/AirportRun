@@ -31,7 +31,7 @@ export default function FlightStatistics({
       
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* On Time Percentage */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-gray-200/50 p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
               <TrendingUp className="h-4 w-4 text-green-600" />
@@ -45,7 +45,7 @@ export default function FlightStatistics({
         </div>
 
         {/* Average Delay */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-gray-200/50 p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
               <TrendingDown className="h-4 w-4 text-orange-600" />
@@ -54,12 +54,12 @@ export default function FlightStatistics({
           </div>
           <div className="space-y-1">
             <p className="text-2xl font-bold text-gray-900">{averageDelay}m</p>
-            <p className="text-xs text-gray-600">{delayedFlights} delayed</p>
+            <p className="text-xs text-orange-600">Worst: AA5621 (85min delay)</p>
           </div>
         </div>
 
         {/* Cancellations */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-gray-200/50 p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
               <Plane className="h-4 w-4 text-red-600" />
@@ -68,12 +68,12 @@ export default function FlightStatistics({
           </div>
           <div className="space-y-1">
             <p className="text-2xl font-bold text-gray-900">{cancellations}</p>
-            <p className="text-xs text-gray-600">{((cancellations / totalFlights) * 100).toFixed(1)}% of total</p>
+            <p className="text-xs text-red-600">AA2847, DL1205, UA3452, WN7890, B61234</p>
           </div>
         </div>
 
         {/* Total Operations */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-gray-200/50 p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
               <BarChart3 className="h-4 w-4 text-blue-600" />
@@ -82,7 +82,7 @@ export default function FlightStatistics({
           </div>
           <div className="space-y-1">
             <p className="text-2xl font-bold text-gray-900">{totalFlights}</p>
-            <p className="text-xs text-gray-600">flights today</p>
+            <p className="text-xs text-blue-600">Top: American (142), Delta (89), United (76), Southwest (58)</p>
           </div>
         </div>
       </div>

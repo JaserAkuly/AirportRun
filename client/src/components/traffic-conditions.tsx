@@ -46,7 +46,7 @@ export default function TrafficConditions({ data }: TrafficConditionsProps) {
         </div>
       </div>
       
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50">
         <div className="divide-y divide-gray-100">
           {data.map((route) => {
             const StatusIcon = getStatusIcon(route.statusColor);

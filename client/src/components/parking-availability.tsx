@@ -42,7 +42,7 @@ export default function ParkingAvailability({ data }: ParkingAvailabilityProps) 
       
       <div className="space-y-4">
         {/* Terminal Parking */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 p-4">
           <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
             <Building className="text-gray-400 mr-2 h-4 w-4" />
             Terminal Parking
@@ -77,7 +77,7 @@ export default function ParkingAvailability({ data }: ParkingAvailabilityProps) 
         </div>
 
         {/* Express & Remote Parking */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 p-4">
           <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
             <Bus className="text-gray-400 mr-2 h-4 w-4" />
             Express & Remote

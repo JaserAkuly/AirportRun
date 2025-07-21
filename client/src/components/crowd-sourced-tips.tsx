@@ -189,7 +189,7 @@ export default function CrowdSourcedTips({ data }: CrowdSourcedTipsProps) {
         </Dialog>
       </div>
       
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 overflow-hidden">
         <div className="max-h-96 overflow-y-auto">
           {tips.length === 0 ? (
             <div className="p-8 text-center">
