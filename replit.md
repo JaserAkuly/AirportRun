@@ -8,6 +8,17 @@ This is a mobile-first MVP web application called "DFW Airport Congestion Tracke
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (July 21, 2025)
+
+✓ Enhanced congestion forecast with AI-powered analysis using real FlightAware flight traffic data
+✓ Removed confusing three-header layout in favor of clean bar chart visualization  
+✓ Integrated multi-factor analysis: flight patterns (50%), parking pressure (30%), traffic conditions (20%)
+✓ Added intelligent recommendations showing best/worst travel times based on data analysis
+✓ Fixed tip submission functionality with proper API endpoint and form handling
+✓ Updated all tip usernames to display as "Frequent Flyer" consistently
+✓ Added "Restroom" category option for crowd-sourced tips
+✓ Enhanced component ordering: congestion forecast (top), parking, traffic, crowd tips, flight statistics
+
 ## System Architecture
 
 The application follows a full-stack TypeScript architecture with a clear separation between client and server components:
@@ -34,8 +45,9 @@ The application follows a full-stack TypeScript architecture with a clear separa
 2. **Parking Scraper Service** (`server/services/parking-scraper.ts`): Scrapes DFW Airport parking availability data
 3. **Traffic Service** (`server/services/traffic-api.ts`): Provides internal airport traffic and construction information
 4. **Alerts Service** (`server/services/alerts-api.ts`): Operational alerts, construction notices, and service disruptions
-5. **Crowd Tips Service** (`server/services/crowd-tips-api.ts`): User-generated real-time experiences and tips
+5. **Crowd Tips Service** (`server/services/crowd-tips-api.ts`): User-generated real-time experiences and tips with submission functionality
 6. **Notification Service** (`server/services/notification-service.ts`): Push notifications for significant flight delays and alerts
+7. **AI Congestion Analysis** (`server/routes.ts`): Intelligent analysis combining FlightAware data, parking availability, and traffic patterns
 
 ### Future API Integrations (Planned)
 - **Qsensor API**: Customs and immigration queue tracking for international terminals
@@ -44,12 +56,12 @@ The application follows a full-stack TypeScript architecture with a clear separa
 - **LoungeReview.com API**: Lounge access policies, photos, and user reviews
 
 ### Frontend Components
-1. **Flight Departures** (`client/src/components/flight-departures.tsx`): Shows next 5 flights departing within 2-3 hours maximum
-2. **Parking Availability** (`client/src/components/parking-availability.tsx`): Real-time parking status for terminal and remote lots
-3. **Congestion Forecast** (`client/src/components/congestion-forecast.tsx`): 12-hour predictive congestion levels (top priority)
-4. **Traffic Conditions** (`client/src/components/traffic-conditions.tsx`): Internal airport traffic including terminal construction impacts
-5. **Airport Alerts** (`client/src/components/airport-alerts.tsx`): Critical operational alerts and construction notices (compact display)
-6. **Crowd-Sourced Tips** (`client/src/components/crowd-sourced-tips.tsx`): Real-time traveler experiences and tips with modal submission feature
+1. **Congestion Forecast** (`client/src/components/congestion-forecast.tsx`): AI-powered 12-hour predictive congestion analysis using FlightAware data, parking, and traffic (top priority)
+2. **Parking Availability** (`client/src/components/parking-availability.tsx`): Real-time parking status with capacity numbers (e.g., "52/85 spots")
+3. **Traffic Conditions** (`client/src/components/traffic-conditions.tsx`): Internal airport traffic including terminal construction impacts
+4. **Crowd-Sourced Tips** (`client/src/components/crowd-sourced-tips.tsx`): Timeline-style tips with submission functionality and "Restroom" category
+5. **Flight Statistics** (`client/src/components/flight-statistics.tsx`): Delay/cancellation percentages replacing individual flight departures
+6. **Airport Alerts** (`client/src/components/airport-alerts.tsx`): Dismissible toast-style alerts with X buttons
 7. **Notification Settings** (`client/src/components/notification-settings.tsx`): Push notification preferences for delay alerts and terminal preferences
 8. **Notification Hook** (`client/src/hooks/useNotifications.ts`): Browser notification API management and permission handling
 

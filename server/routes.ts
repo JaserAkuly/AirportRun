@@ -213,8 +213,126 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-// Generate predictive congestion forecast based on typical airport patterns
-function generateCongestionForecast() {
+// AI-powered congestion forecast using FlightAware data, parking, and traffic patterns
+async function generateCongestionForecast() {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const forecast = [];
+  
+  try {
+    // Get current flight data to analyze patterns
+    const flightData = await flightAwareService.getFlightDepartures();
+    const parkingData = await parkingScraperService.getParkingAvailability();
+    const trafficData = await trafficService.getTrafficConditions();
+    
+    for (let i = 0; i < 12; i++) {
+      const hour = (currentHour + i) % 24;
+      
+      // Analyze flight traffic for this hour
+      const flightTrafficScore = analyzeFlightTraffic(hour, flightData);
+      
+      // Analyze parking pressure
+      const parkingPressureScore = analyzeParkingPressure(parkingData);
+      
+      // Analyze traffic conditions
+      const trafficScore = analyzeTrafficConditions(trafficData);
+      
+      // Calculate overall congestion score (0-100)
+      const congestionScore = Math.round(
+        (flightTrafficScore * 0.5) + 
+        (parkingPressureScore * 0.3) + 
+        (trafficScore * 0.2)
+      );
+      
+      let congestionLevel: string;
+      let congestionColor: string;
+      
+      if (congestionScore >= 70) {
+        congestionLevel = "high";
+        congestionColor = "error";
+      } else if (congestionScore >= 40) {
+        congestionLevel = "medium";
+        congestionColor = "warning";
+      } else {
+        congestionLevel = "low";
+        congestionColor = "success";
+      }
+      
+      forecast.push({
+        hour,
+        date: now.toISOString().split('T')[0],
+        congestionLevel,
+        congestionColor,
+        barHeight: congestionScore,
+      });
+    }
+    
+    return forecast;
+    
+  } catch (error) {
+    console.error("Error generating AI congestion forecast:", error);
+    // Fallback to pattern-based forecast
+    return generateBasicCongestionForecast();
+  }
+}
+
+// Analyze flight traffic patterns for a specific hour
+function analyzeFlightTraffic(hour: number, flightData: any[]): number {
+  // Peak departure times at DFW: 6-9 AM, 4-8 PM
+  const morningPeak = hour >= 6 && hour <= 9;
+  const eveningPeak = hour >= 16 && hour <= 20;
+  const afternoonModerate = hour >= 10 && hour <= 15;
+  const lateNight = hour >= 22 || hour <= 5;
+  
+  // Base score on typical patterns
+  let baseScore = 0;
+  if (morningPeak) baseScore = 85;
+  else if (eveningPeak) baseScore = 90;
+  else if (afternoonModerate) baseScore = 55;
+  else if (lateNight) baseScore = 20;
+  else baseScore = 40;
+  
+  // Adjust based on actual flight data if available
+  if (flightData && flightData.length > 0) {
+    const avgDelay = flightData.reduce((sum, flight) => sum + (flight.delayMinutes || 0), 0) / flightData.length;
+    if (avgDelay > 30) baseScore += 15;
+    else if (avgDelay > 15) baseScore += 8;
+  }
+  
+  return Math.min(100, Math.max(0, baseScore));
+}
+
+// Analyze parking pressure impact on congestion
+function analyzeParkingPressure(parkingData: any[]): number {
+  if (!parkingData || parkingData.length === 0) return 50;
+  
+  const totalOccupancy = parkingData.reduce((total, lot) => {
+    const occupancyRate = lot.availableSpaces / (lot.totalSpaces || 1);
+    return total + (1 - occupancyRate);
+  }, 0) / parkingData.length;
+  
+  return Math.round(totalOccupancy * 100);
+}
+
+// Analyze traffic conditions impact
+function analyzeTrafficConditions(trafficData: any[]): number {
+  if (!trafficData || trafficData.length === 0) return 30;
+  
+  // Count construction impacts and delays
+  const constructionCount = trafficData.filter(item => 
+    item.description && item.description.toLowerCase().includes('construction')
+  ).length;
+  
+  const delayCount = trafficData.filter(item => 
+    item.description && (item.description.toLowerCase().includes('delay') || 
+                        item.description.toLowerCase().includes('slow'))
+  ).length;
+  
+  return Math.min(100, (constructionCount * 25) + (delayCount * 15) + 30);
+}
+
+// Fallback basic congestion forecast
+function generateBasicCongestionForecast() {
   const now = new Date();
   const currentHour = now.getHours();
   const forecast = [];

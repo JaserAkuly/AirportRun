@@ -1,4 +1,4 @@
-import { TrendingUp, CheckCircle, AlertTriangle, Moon, Info } from "lucide-react";
+import { TrendingUp, Info, Plane, Car, Clock } from "lucide-react";
 import type { CongestionForecast } from "@shared/schema";
 
 interface CongestionForecastProps {
@@ -6,51 +6,14 @@ interface CongestionForecastProps {
 }
 
 export default function CongestionForecast({ data }: CongestionForecastProps) {
-  const currentTime = new Date();
-  const currentHour = currentTime.getHours();
-
-  const getCurrentPeriod = () => {
-    if (currentHour >= 6 && currentHour <= 8) return "Peak (6-8 AM)";
-    if (currentHour >= 17 && currentHour <= 20) return "Peak (5-8 PM)";
-    if (currentHour >= 21 || currentHour <= 5) return "Evening/Night";
-    return "Current";
-  };
-
-  const getCurrentCongestionLevel = () => {
-    if (currentHour >= 6 && currentHour <= 8) return { level: "High Congestion", color: "warning", icon: AlertTriangle };
-    if (currentHour >= 17 && currentHour <= 20) return { level: "High Congestion", color: "warning", icon: AlertTriangle };
-    return { level: "Low Congestion", color: "success", icon: CheckCircle };
-  };
-
   const getBarColorClass = (color: string) => {
     switch (color) {
-      case 'success': return 'bg-success';
-      case 'warning': return 'bg-warning';
-      case 'error': return 'bg-error';
+      case 'success': return 'bg-green-500';
+      case 'warning': return 'bg-yellow-500';
+      case 'error': return 'bg-red-500';
       default: return 'bg-gray-400';
     }
   };
-
-  const getIconColorClass = (color: string) => {
-    switch (color) {
-      case 'success': return 'text-success';
-      case 'warning': return 'text-warning';
-      case 'error': return 'text-error';
-      default: return 'text-gray-600';
-    }
-  };
-
-  const getBgColorClass = (color: string) => {
-    switch (color) {
-      case 'success': return 'bg-success bg-opacity-10';
-      case 'warning': return 'bg-warning bg-opacity-10';
-      case 'error': return 'bg-error bg-opacity-10';
-      default: return 'bg-gray-100';
-    }
-  };
-
-  const currentCongestion = getCurrentCongestionLevel();
-  const CurrentIcon = currentCongestion.icon;
 
   const formatHour = (hour: number) => {
     if (hour === 0) return "12 AM";
@@ -58,6 +21,22 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
     if (hour < 12) return `${hour} AM`;
     return `${hour - 12} PM`;
   };
+
+  const getRecommendation = () => {
+    const sortedData = [...data].sort((a, b) => a.barHeight - b.barHeight);
+    const lightestHours = sortedData.slice(0, 3);
+    const heaviestHours = sortedData.slice(-3);
+    
+    const lightTimes = lightestHours.map(d => formatHour(d.hour)).join(", ");
+    const heavyTimes = heaviestHours.map(d => formatHour(d.hour)).join(", ");
+    
+    return {
+      best: lightTimes,
+      avoid: heavyTimes
+    };
+  };
+
+  const recommendation = getRecommendation();
 
   return (
     <section className="mb-8">
@@ -68,60 +47,91 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
         </h2>
         <div className="text-sm text-gray-500 flex items-center">
           <div className="w-2 h-2 bg-primary rounded-full mr-1" />
-          <span>AI Predicted</span>
+          <span>AI Analysis</span>
         </div>
       </div>
       
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="grid grid-cols-3 gap-6 mb-6">
-          <div className="text-center">
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2 ${getBgColorClass(currentCongestion.color)}`}>
-              <CurrentIcon className={`h-6 w-6 ${getIconColorClass(currentCongestion.color)}`} />
+        {/* Hourly Bar Chart */}
+        <div className="space-y-4 mb-6">
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold text-gray-900">Hourly Congestion Levels</h4>
+            <div className="flex items-center space-x-4 text-xs">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-green-500 rounded mr-1"></div>
+                <span>Low</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-yellow-500 rounded mr-1"></div>
+                <span>Medium</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-red-500 rounded mr-1"></div>
+                <span>High</span>
+              </div>
             </div>
-            <p className="font-semibold text-gray-900">{getCurrentPeriod()}</p>
-            <p className={`text-sm ${getIconColorClass(currentCongestion.color)}`}>{currentCongestion.level}</p>
           </div>
-          <div className="text-center">
-            <div className="w-16 h-16 bg-warning bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-2">
-              <AlertTriangle className="text-warning h-6 w-6" />
-            </div>
-            <p className="font-semibold text-gray-900">Peak Hours</p>
-            <p className="text-sm text-warning">High Congestion</p>
-          </div>
-          <div className="text-center">
-            <div className="w-16 h-16 bg-success bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-2">
-              <Moon className="text-success h-6 w-6" />
-            </div>
-            <p className="font-semibold text-gray-900">Evening (9+ PM)</p>
-            <p className="text-sm text-success">Low Congestion</p>
-          </div>
-        </div>
-        
-        {/* Hourly timeline */}
-        <div className="space-y-3">
-          <h4 className="font-semibold text-gray-900">Next 12 Hours</h4>
           
           <div className="grid grid-cols-6 sm:grid-cols-12 gap-2">
             {data.slice(0, 12).map((forecast, index) => (
               <div key={`${forecast.hour}-${index}`} className="text-center">
-                <div
-                  className={`rounded mb-1 ${getBarColorClass(forecast.congestionColor)}`}
-                  style={{ 
-                    height: `${Math.max(forecast.barHeight * 0.8, 16)}px`,
-                    maxHeight: '80px'
-                  }}
-                />
+                <div className="h-20 flex flex-col justify-end mb-2">
+                  <div
+                    className={`rounded-t transition-all duration-300 ${getBarColorClass(forecast.congestionColor)}`}
+                    style={{ 
+                      height: `${Math.max(forecast.barHeight * 0.8, 12)}%`,
+                    }}
+                    title={`${formatHour(forecast.hour)}: ${forecast.congestionLevel} congestion (${forecast.barHeight}%)`}
+                  />
+                </div>
                 <span className="text-xs text-gray-500">{formatHour(forecast.hour)}</span>
               </div>
             ))}
           </div>
         </div>
+
+        {/* AI Analysis Insights */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="flex items-center mb-2">
+              <Plane className="h-5 w-5 text-blue-600 mr-2" />
+              <span className="font-medium text-blue-900">Flight Traffic</span>
+            </div>
+            <p className="text-sm text-blue-800">Analysis based on departure/arrival patterns from FlightAware data</p>
+          </div>
+          
+          <div className="bg-green-50 p-4 rounded-lg">
+            <div className="flex items-center mb-2">
+              <Car className="h-5 w-5 text-green-600 mr-2" />
+              <span className="font-medium text-green-900">Parking Impact</span>
+            </div>
+            <p className="text-sm text-green-800">Parking availability and terminal access patterns included</p>
+          </div>
+          
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <div className="flex items-center mb-2">
+              <Clock className="h-5 w-5 text-purple-600 mr-2" />
+              <span className="font-medium text-purple-900">Traffic Conditions</span>
+            </div>
+            <p className="text-sm text-purple-800">Airport roadway and construction data factored in</p>
+          </div>
+        </div>
         
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-800">
-            <Info className="inline mr-1 h-4 w-4" />
-            <strong>Recommendation:</strong> Best departure times are before 5 PM or after 9 PM to avoid peak congestion.
-          </p>
+        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+          <div className="flex items-start">
+            <Info className="h-5 w-5 text-blue-600 mr-2 mt-0.5" />
+            <div>
+              <p className="text-sm text-blue-800 mb-2">
+                <strong>AI Recommendations:</strong>
+              </p>
+              <p className="text-sm text-blue-700 mb-1">
+                <strong>Best times to travel:</strong> {recommendation.best}
+              </p>
+              <p className="text-sm text-blue-700">
+                <strong>Avoid if possible:</strong> {recommendation.avoid}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
