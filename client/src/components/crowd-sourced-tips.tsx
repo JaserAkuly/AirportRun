@@ -1,204 +1,236 @@
-import { MessageCircle, Clock, Users, MapPin, Plus, Star } from "lucide-react";
+import { useState } from "react";
+import { MessageSquare, Plus, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useState } from "react";
+import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-
-interface CrowdTip {
-  id: number;
-  category: string; // "security", "skylink", "amenities", "general"
-  location: string; // "Terminal A", "Terminal C Gate 16", etc.
-  message: string;
-  timePosted: string;
-  helpful: number | null;
-  userName?: string | null;
-}
+import type { CrowdTip } from "@shared/schema";
 
 interface CrowdSourcedTipsProps {
   data: CrowdTip[];
-  onSubmitTip?: (tip: Omit<CrowdTip, 'id' | 'timePosted' | 'helpful'>) => void;
 }
 
-export default function CrowdSourcedTips({ data, onSubmitTip }: CrowdSourcedTipsProps) {
+const tipFormSchema = z.object({
+  category: z.string().min(1, "Category is required"),
+  location: z.string().min(1, "Location is required"),
+  message: z.string().min(1, "Message is required").max(280, "Message too long"),
+});
+
+type TipFormData = z.infer<typeof tipFormSchema>;
+
+export default function CrowdSourcedTips({ data }: CrowdSourcedTipsProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
-  const [message, setMessage] = useState("");
+  const [tips, setTips] = useState(data);
   const { toast } = useToast();
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'security': return Users;
-      case 'skylink': return Clock;
-      case 'amenities': return Star;
-      default: return MessageCircle;
-    }
-  };
+  const form = useForm<TipFormData>({
+    resolver: zodResolver(tipFormSchema),
+    defaultValues: {
+      category: "",
+      location: "",
+      message: "",
+    },
+  });
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'security': return 'bg-red-50 text-red-700 border-red-200';
-      case 'skylink': return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'amenities': return 'bg-green-50 text-green-700 border-green-200';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
+  const onSubmit = async (data: TipFormData) => {
+    try {
+      const response = await fetch('/api/crowd-tips', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-  const handleSubmit = () => {
-    if (!category || !location || !message) {
+      if (!response.ok) {
+        throw new Error('Failed to submit tip');
+      }
+
+      const result = await response.json();
+      
+      // Add the new tip to the top of the timeline
+      setTips(prev => [result.tip, ...prev]);
+
       toast({
-        title: "Missing information",
-        description: "Please fill in all fields before submitting.",
+        title: "Tip shared!",
+        description: "Your tip is now live for fellow travelers.",
+      });
+
+      form.reset();
+      setIsModalOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to share tip. Please try again.",
         variant: "destructive",
       });
-      return;
     }
-
-    if (onSubmitTip) {
-      onSubmitTip({ category, location, message });
-    }
-
-    toast({
-      title: "Tip submitted!",
-      description: "Thank you for sharing your experience with fellow travelers.",
-    });
-
-    setIsModalOpen(false);
-    resetForm();
   };
 
-  const resetForm = () => {
-    setCategory("");
-    setLocation("");
-    setMessage("");
+  const handleLike = (tipId: string) => {
+    setTips(prev => prev.map(tip => 
+      tip.tipId === tipId 
+        ? { ...tip, helpful: tip.helpful + 1 }
+        : tip
+    ));
   };
-
-  const recentTips = data.slice(0, 5); // Show 5 most recent tips
 
   return (
     <section className="mb-8">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-          <MessageCircle className="text-primary mr-3 h-6 w-6" />
-          Real-Time Tips from Travelers
+          <MessageSquare className="text-primary mr-3 h-6 w-6" />
+          Traveler Timeline
         </h2>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button 
-              size="sm"
-              className="flex items-center space-x-2"
-            >
+            <Button size="sm" className="flex items-center space-x-2 bg-blue-500 hover:bg-blue-600">
               <Plus className="h-4 w-4" />
-              <span>Share Tip</span>
+              <span>Share</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Share Your Airport Experience</DialogTitle>
+              <DialogTitle>What's happening at DFW?</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Category</label>
-                <select 
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                >
-                  <option value="">Select category</option>
-                  <option value="security">Security Lines</option>
-                  <option value="skylink">Skylink Train</option>
-                  <option value="amenities">Food & Shops</option>
-                  <option value="general">General</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Location</label>
-                <input 
-                  type="text" 
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g., Terminal C Gate 16"
-                  className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Topic" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="security">Security</SelectItem>
+                            <SelectItem value="food">Food</SelectItem>
+                            <SelectItem value="gates">Gates</SelectItem>
+                            <SelectItem value="parking">Parking</SelectItem>
+                            <SelectItem value="transportation">Transport</SelectItem>
+                            <SelectItem value="general">General</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Location</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Where" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Terminal A">Terminal A</SelectItem>
+                            <SelectItem value="Terminal B">Terminal B</SelectItem>
+                            <SelectItem value="Terminal C">Terminal C</SelectItem>
+                            <SelectItem value="Terminal D">Terminal D</SelectItem>
+                            <SelectItem value="Terminal E">Terminal E</SelectItem>
+                            <SelectItem value="Skylink">Skylink</SelectItem>
+                            <SelectItem value="Parking">Parking</SelectItem>
+                            <SelectItem value="Ground Transportation">Ground Transport</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <textarea
+                          {...field}
+                          className="w-full p-3 border border-gray-300 rounded-lg resize-none text-lg"
+                          rows={4}
+                          placeholder="Share what's happening right now..."
+                          maxLength={280}
+                        />
+                      </FormControl>
+                      <div className="text-xs text-gray-500 text-right">
+                        {field.value.length}/280
+                      </div>
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Your Tip</label>
-                <textarea 
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="e.g., Security line at Terminal D took 12 minutes around noon"
-                  className="w-full p-2 border border-gray-300 rounded-lg text-sm h-20 resize-none"
-                />
-              </div>
-              <div className="flex space-x-2 pt-2">
-                <Button 
-                  onClick={handleSubmit}
-                  className="flex-1"
-                  disabled={!category || !location || !message}
-                >
-                  Submit Tip
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    resetForm();
-                  }}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
+
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
+                    Share
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        {/* Tips List */}
-        <div className="divide-y divide-gray-100">
-          {recentTips.map((tip) => {
-            const CategoryIcon = getCategoryIcon(tip.category);
-            
-            return (
-              <div key={tip.id} className="p-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <CategoryIcon className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getCategoryColor(tip.category)}`}>
-                        {tip.category}
-                      </span>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {tip.location}
-                      </div>
+      
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="max-h-96 overflow-y-auto">
+          {tips.length === 0 ? (
+            <div className="p-8 text-center">
+              <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No tips shared yet. Be the first to help fellow travelers!</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {tips.map((tip) => (
+                <div key={tip.tipId} className="p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <MessageSquare className="h-5 w-5 text-blue-600" />
                     </div>
-                    <p className="text-sm text-gray-900 mb-2">{tip.message}</p>
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span>{tip.timePosted}</span>
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-3 w-3 text-yellow-500" />
-                        <span>{tip.helpful || 0} helpful</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <span className="font-medium text-gray-900">{tip.userName}</span>
+                        <span className="text-gray-500">·</span>
+                        <span className="text-sm text-gray-500">{tip.timePosted}</span>
+                      </div>
+                      <p className="text-gray-800 mb-2">{tip.message}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-medium">
+                            {tip.category}
+                          </span>
+                          <span className="text-xs text-gray-500">{tip.location}</span>
+                        </div>
+                        <button 
+                          onClick={() => handleLike(tip.tipId)}
+                          className="flex items-center space-x-1 text-gray-500 hover:text-red-500 transition-colors group"
+                        >
+                          <ThumbsUp className="h-4 w-4 group-hover:fill-current" />
+                          <span className="text-sm">{tip.helpful}</span>
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-
-
-
-        {/* Info Footer */}
-        <div className="p-3 bg-blue-50 border-t border-gray-100">
-          <p className="text-sm text-blue-800 flex items-center">
-            <MessageCircle className="inline mr-1 h-4 w-4" />
-            Tips are shared by fellow travelers. Times and conditions may vary throughout the day.
-          </p>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

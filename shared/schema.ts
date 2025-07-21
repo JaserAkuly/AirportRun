@@ -50,6 +50,8 @@ export const parkingAvailability = pgTable("parking_availability", {
   statusColor: text("status_color").notNull(), // "success", "warning", "error"
   dailyRate: integer("daily_rate").notNull(),
   shuttleRequired: boolean("shuttle_required").default(false),
+  availableSpaces: integer("available_spaces"),
+  totalSpaces: integer("total_spaces"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

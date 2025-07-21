@@ -10,6 +10,7 @@ import CongestionForecast from "../components/congestion-forecast";
 import TrafficConditions from "../components/traffic-conditions";
 import AirportAlerts from "../components/airport-alerts";
 import CrowdSourcedTips from "../components/crowd-sourced-tips";
+import FlightStatistics from "../components/flight-statistics";
 import NotificationSettings from "../components/notification-settings";
 
 import type { DashboardData } from "@shared/schema";
@@ -133,25 +134,29 @@ export default function Dashboard() {
             />
 
             {/* 12-Hour Congestion Forecast - Top Priority */}
-            <CongestionForecast data={dashboardData?.congestionForecast || []} />
+            <div className="mb-8">
+              <CongestionForecast data={dashboardData?.congestionForecast || []} />
+            </div>
 
             {/* Parking Availability */}
-            <ParkingAvailability data={dashboardData?.parkingAvailability || []} />
+            <div className="mb-8">
+              <ParkingAvailability data={dashboardData?.parkingAvailability || []} />
+            </div>
 
             {/* Traffic Conditions */}
-            <TrafficConditions data={dashboardData?.trafficConditions || []} />
+            <div className="mb-8">
+              <TrafficConditions data={dashboardData?.trafficConditions || []} />
+            </div>
 
             {/* Crowd-Sourced Tips */}
             <CrowdSourcedTips data={dashboardData?.crowdTips || []} />
 
-
-
-            {/* Next 5 Departing Flights */}
-            <FlightDepartures 
-              data={dashboardData?.flightDepartures || []} 
-              onTimePercentage={dashboardData?.onTimePercentage || 0}
-              averageDelay={dashboardData?.averageDelay || 0}
-              cancellations={dashboardData?.cancellations || 0}
+            {/* Flight Statistics */}
+            <FlightStatistics 
+              onTimePercentage={dashboardData?.onTimePercentage || 78}
+              averageDelay={dashboardData?.averageDelay || 18}
+              cancellations={dashboardData?.cancellations || 5}
+              totalFlights={450}
             />
 
 
