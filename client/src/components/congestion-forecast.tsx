@@ -58,10 +58,10 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
         <div className="space-y-4 mb-6">
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200/50">
             <div className="flex items-center space-x-4">
-              <div className="text-2xl font-bold text-green-700">177</div>
+              <div className="text-2xl font-bold text-green-700">{recommendation.lightFlightCount}</div>
               <div>
                 <div className="text-lg font-bold text-green-700">Best Travel Times</div>
-                <div className="text-sm text-green-600">4AM-6AM, 10PM-12AM</div>
+                <div className="text-sm text-green-600">{recommendation.best}</div>
               </div>
             </div>
             <div className="w-24 h-2 bg-green-200 rounded-full">
@@ -71,10 +71,10 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
           
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200/50">
             <div className="flex items-center space-x-4">
-              <div className="text-2xl font-bold text-yellow-700">345</div>
+              <div className="text-2xl font-bold text-yellow-700">{Math.round((recommendation.lightFlightCount + recommendation.heavyFlightCount) / 2)}</div>
               <div>
                 <div className="text-lg font-bold text-yellow-700">Avoid These Times</div>
-                <div className="text-sm text-yellow-600">9AM-4PM, 8PM-10PM</div>
+                <div className="text-sm text-yellow-600">{recommendation.avoid}</div>
               </div>
             </div>
             <div className="w-24 h-2 bg-yellow-200 rounded-full">
@@ -84,40 +84,15 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
           
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-red-100 rounded-lg border border-red-200/50">
             <div className="flex items-center space-x-4">
-              <div className="text-2xl font-bold text-red-700">597</div>
+              <div className="text-2xl font-bold text-red-700">{recommendation.heavyFlightCount}</div>
               <div>
                 <div className="text-lg font-bold text-red-700">Peak Chaos</div>
-                <div className="text-sm text-red-600">6AM-9AM, 4PM-8PM</div>
+                <div className="text-sm text-red-600">{recommendation.avoid}</div>
               </div>
             </div>
             <div className="w-24 h-2 bg-red-200 rounded-full">
               <div className="h-2 bg-red-500 rounded-full" style={{ width: '100%' }}></div>
             </div>
-          </div>
-        </div>
-
-        {/* AI Recommendations */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div className="bg-green-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <Info className="h-5 w-5 text-green-600 mr-2" />
-              <span className="font-medium text-green-900">Best Travel Times Today</span>
-            </div>
-            <p className="text-sm text-green-800 mb-1">{recommendation.best}</p>
-            <p className="text-xs text-green-600">
-              {recommendation.lightFlightCount} total departures/arrivals during these hours
-            </p>
-          </div>
-          
-          <div className="bg-red-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <Info className="h-5 w-5 text-red-600 mr-2" />
-              <span className="font-medium text-red-900">Avoid These Times Today</span>
-            </div>
-            <p className="text-sm text-red-800 mb-1">{recommendation.avoid}</p>
-            <p className="text-xs text-red-600">
-              {recommendation.heavyFlightCount} total departures/arrivals during these hours
-            </p>
           </div>
         </div>
       </div>
