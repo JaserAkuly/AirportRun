@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plane, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import type { DashboardData } from "@shared/schema";
 
 export default function Dashboard() {
   const { toast } = useToast();
+  const [dismissedAlerts, setDismissedAlerts] = useState<Set<number>>(new Set());
 
   const {
     data: dashboardData,
@@ -126,10 +127,9 @@ export default function Dashboard() {
           <>
             {/* Airport Alerts - Critical information first */}
             <AirportAlerts 
-              data={dashboardData?.airportAlerts || []} 
+              data={(dashboardData?.airportAlerts || []).filter(alert => !dismissedAlerts.has(alert.id))} 
               onDismiss={(alertId) => {
-                // In a real app, this would call an API to dismiss the alert
-                console.log(`Dismissing alert ${alertId}`);
+                setDismissedAlerts(prev => new Set([...prev, alertId]));
               }}
             />
 
@@ -168,11 +168,6 @@ export default function Dashboard() {
       <footer className="bg-white border-t border-gray-200 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row justify-between items-center">
-            <div className="flex items-center space-x-4 mb-4 sm:mb-0">
-              <p className="text-sm text-gray-500">
-                Data sources: <span className="font-medium">FlightAware API</span> • <span className="font-medium">DFW Parking</span> • <span className="font-medium">Traffic Services</span>
-              </p>
-            </div>
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"

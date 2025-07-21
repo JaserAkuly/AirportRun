@@ -33,7 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ]);
 
       // Generate congestion forecast
-      const congestionForecast = generateCongestionForecast();
+      const congestionForecast = await generateCongestionForecast();
 
       // Update storage
       await Promise.all([
@@ -118,7 +118,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         crowdTipsService.getCrowdTips(),
       ]);
 
-      const congestionForecast = generateCongestionForecast();
+      const congestionForecast = await generateCongestionForecast();
 
       await Promise.all([
         storage.updateFlightDepartures(flightDepartures),
@@ -147,7 +147,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         crowdTipsService.getCrowdTips(),
       ]);
 
-      const congestionForecast = generateCongestionForecast();
+      const congestionForecast = await generateCongestionForecast();
 
       await Promise.all([
         storage.updateFlightDepartures(flightDepartures),

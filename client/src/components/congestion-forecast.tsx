@@ -90,47 +90,22 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
           </div>
         </div>
 
-        {/* AI Analysis Insights */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <Plane className="h-5 w-5 text-blue-600 mr-2" />
-              <span className="font-medium text-blue-900">Flight Traffic</span>
-            </div>
-            <p className="text-sm text-blue-800">Analysis based on departure/arrival patterns from FlightAware data</p>
-          </div>
-          
+        {/* AI Recommendations */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div className="bg-green-50 p-4 rounded-lg">
             <div className="flex items-center mb-2">
-              <Car className="h-5 w-5 text-green-600 mr-2" />
-              <span className="font-medium text-green-900">Parking Impact</span>
+              <Info className="h-5 w-5 text-green-600 mr-2" />
+              <span className="font-medium text-green-900">Best Travel Times</span>
             </div>
-            <p className="text-sm text-green-800">Parking availability and terminal access patterns included</p>
+            <p className="text-sm text-green-800">{recommendation.best}</p>
           </div>
           
-          <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="bg-red-50 p-4 rounded-lg">
             <div className="flex items-center mb-2">
-              <Clock className="h-5 w-5 text-purple-600 mr-2" />
-              <span className="font-medium text-purple-900">Traffic Conditions</span>
+              <Info className="h-5 w-5 text-red-600 mr-2" />
+              <span className="font-medium text-red-900">Avoid These Times</span>
             </div>
-            <p className="text-sm text-purple-800">Airport roadway and construction data factored in</p>
-          </div>
-        </div>
-        
-        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-          <div className="flex items-start">
-            <Info className="h-5 w-5 text-blue-600 mr-2 mt-0.5" />
-            <div>
-              <p className="text-sm text-blue-800 mb-2">
-                <strong>AI Recommendations:</strong>
-              </p>
-              <p className="text-sm text-blue-700 mb-1">
-                <strong>Best times to travel:</strong> {recommendation.best}
-              </p>
-              <p className="text-sm text-blue-700">
-                <strong>Avoid if possible:</strong> {recommendation.avoid}
-              </p>
-            </div>
+            <p className="text-sm text-red-800">{recommendation.avoid}</p>
           </div>
         </div>
       </div>
