@@ -53,6 +53,10 @@ export interface IStorage {
   updateWeatherData(weatherData: any): Promise<void>;
   getWeatherData(): Promise<any>;
   
+  // Historical trends
+  getHistoricalTrends(): Promise<any>;
+  updateHistoricalTrends(trends: any): Promise<void>;
+  
   // Dashboard data
   getDashboardData(): Promise<DashboardData>;
   
@@ -71,6 +75,7 @@ export class MemStorage implements IStorage {
   private alertsData: AirportAlert[] = [];
   private crowdTipsData: CrowdTip[] = [];
   private weatherData: any = null;
+  private historicalTrendsData: any = null;
   private notificationPrefs: Map<string, NotificationPreferences> = new Map();
   private currentId = 1;
 
@@ -176,6 +181,14 @@ export class MemStorage implements IStorage {
     return this.weatherData;
   }
 
+  async updateHistoricalTrends(trends: any): Promise<void> {
+    this.historicalTrendsData = trends;
+  }
+
+  async getHistoricalTrends(): Promise<any> {
+    return this.historicalTrendsData;
+  }
+
   async getDashboardData(): Promise<DashboardData> {
     const flightDepartures = await this.getFlightDepartures();
     
@@ -209,6 +222,7 @@ export class MemStorage implements IStorage {
       airportAlerts: await this.getAirportAlerts(),
       crowdTips: await this.getCrowdTips(),
       weatherData: await this.getWeatherData(),
+      historicalTrends: await this.getHistoricalTrends(),
       onTimePercentage,
       averageDelay,
       cancellations,

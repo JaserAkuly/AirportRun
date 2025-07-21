@@ -30,9 +30,9 @@ export default function AirportAlerts({ data, onDismiss }: AirportAlertsProps) {
 
   const getAlertColorClass = (type: string) => {
     switch (type) {
-      case 'warning': return 'bg-warning bg-opacity-10 border-warning border-opacity-20';
-      case 'error': return 'bg-error bg-opacity-10 border-error border-opacity-20';
-      case 'success': return 'bg-success bg-opacity-10 border-success border-opacity-20';
+      case 'warning': return 'bg-yellow-50 border-yellow-200';
+      case 'error': return 'bg-red-50 border-red-200';
+      case 'success': return 'bg-green-50 border-green-200';
       case 'info':
       default: return 'bg-blue-50 border-blue-200';
     }
@@ -40,9 +40,9 @@ export default function AirportAlerts({ data, onDismiss }: AirportAlertsProps) {
 
   const getAlertTextColorClass = (type: string) => {
     switch (type) {
-      case 'warning': return 'text-warning';
-      case 'error': return 'text-error';
-      case 'success': return 'text-success';
+      case 'warning': return 'text-yellow-600';
+      case 'error': return 'text-red-600';
+      case 'success': return 'text-green-600';
       case 'info':
       default: return 'text-blue-600';
     }
@@ -50,9 +50,9 @@ export default function AirportAlerts({ data, onDismiss }: AirportAlertsProps) {
 
   const getAlertBgColorClass = (type: string) => {
     switch (type) {
-      case 'warning': return 'bg-warning bg-opacity-20';
-      case 'error': return 'bg-error bg-opacity-20';
-      case 'success': return 'bg-success bg-opacity-20';
+      case 'warning': return 'bg-yellow-100';
+      case 'error': return 'bg-red-100';
+      case 'success': return 'bg-green-100';
       case 'info':
       default: return 'bg-blue-100';
     }
@@ -75,15 +75,16 @@ export default function AirportAlerts({ data, onDismiss }: AirportAlertsProps) {
                   <AlertIcon className={`h-4 w-4 ${getAlertTextColorClass(alert.type)}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 text-sm mb-1">{alert.title}</h3>
-                  <p className="text-sm text-gray-700 mb-2">{alert.message}</p>
+                  <h3 className={`font-semibold text-sm mb-1 ${getAlertTextColorClass(alert.type)}`}>{alert.title}</h3>
+                  <p className="text-sm text-gray-700 mb-2 leading-relaxed">{alert.message}</p>
                   <p className="text-xs text-gray-500">{alert.timestamp}</p>
                 </div>
               </div>
               {alert.dismissible === 1 && onDismiss && (
                 <button
                   onClick={() => onDismiss(alert.id)}
-                  className="ml-3 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                  className="ml-3 p-1 text-gray-400 hover:text-gray-700 hover:bg-white/50 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  title="Dismiss alert"
                 >
                   <X className="h-4 w-4" />
                 </button>

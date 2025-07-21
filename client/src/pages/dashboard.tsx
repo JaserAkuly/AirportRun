@@ -12,6 +12,7 @@ import AirportAlerts from "../components/airport-alerts";
 import CrowdSourcedTips from "../components/crowd-sourced-tips";
 import FlightStatistics from "../components/flight-statistics";
 import NotificationSettings from "../components/notification-settings";
+import HistoricalTrends from "../components/historical-trends";
 
 import type { DashboardData } from "@shared/schema";
 
@@ -147,6 +148,11 @@ export default function Dashboard() {
               cancellations={dashboardData?.cancellations || 5}
               totalFlights={450}
             />
+
+            {/* Historical Trends */}
+            {dashboardData?.historicalTrends && (
+              <HistoricalTrends data={dashboardData.historicalTrends} />
+            )}
 
             {/* Crowd-Sourced Tips */}
             <CrowdSourcedTips data={dashboardData?.crowdTips || []} />

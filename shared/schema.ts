@@ -166,6 +166,24 @@ export const notificationLog = pgTable("notification_log", {
 export type NotificationLog = typeof notificationLog.$inferSelect;
 export type InsertNotificationLog = typeof notificationLog.$inferInsert;
 
+// Historical trend data table for better predictions
+export const historicalTrends = pgTable("historical_trends", {
+  id: serial("id").primaryKey(),
+  date: text("date").notNull(), // YYYY-MM-DD format
+  hour: integer("hour").notNull(), // 0-23
+  dayOfWeek: integer("day_of_week").notNull(), // 0-6 (Sunday-Saturday)
+  flightCount: integer("flight_count").notNull(),
+  avgDelayMinutes: integer("avg_delay_minutes").default(0),
+  congestionScore: integer("congestion_score").notNull(), // 0-100
+  parkingOccupancy: integer("parking_occupancy").default(50), // 0-100 percentage
+  weatherCondition: text("weather_condition"), // clear, rain, fog, etc.
+  specialEvent: boolean("special_event").default(false), // holidays, major events
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type HistoricalTrend = typeof historicalTrends.$inferSelect;
+export type InsertHistoricalTrend = typeof historicalTrends.$inferInsert;
+
 // API response types
 export type DashboardData = {
   flightDepartures: FlightDeparture[];
@@ -175,6 +193,7 @@ export type DashboardData = {
   airportAlerts: AirportAlert[];
   crowdTips: CrowdTip[];
   weatherData?: any;
+  historicalTrends?: any;
   onTimePercentage: number;
   averageDelay: number;
   cancellations: number;

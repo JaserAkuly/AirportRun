@@ -62,6 +62,7 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
               <div>
                 <div className="text-lg font-bold text-green-700">Best Travel Times</div>
                 <div className="text-sm text-green-600">{recommendation.best}</div>
+                <div className="text-xs text-green-500">Total departures/arrivals</div>
               </div>
             </div>
             <div className="w-24 h-2 bg-green-200 rounded-full">
@@ -75,6 +76,7 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
               <div>
                 <div className="text-lg font-bold text-yellow-700">Avoid These Times</div>
                 <div className="text-sm text-yellow-600">{recommendation.avoid}</div>
+                <div className="text-xs text-yellow-500">Total departures/arrivals</div>
               </div>
             </div>
             <div className="w-24 h-2 bg-yellow-200 rounded-full">
@@ -88,6 +90,7 @@ export default function CongestionForecast({ data }: CongestionForecastProps) {
               <div>
                 <div className="text-lg font-bold text-red-700">Peak Chaos</div>
                 <div className="text-sm text-red-600">{recommendation.avoid}</div>
+                <div className="text-xs text-red-500">Total departures/arrivals</div>
               </div>
             </div>
             <div className="w-24 h-2 bg-red-200 rounded-full">

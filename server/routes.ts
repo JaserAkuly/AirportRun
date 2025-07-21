@@ -7,6 +7,7 @@ import { trafficService } from "./services/traffic-api";
 import { alertsService } from "./services/alerts-api";
 import { crowdTipsService } from "./services/crowd-tips-api";
 import { weatherService } from "./services/weather-api";
+import { historicalTrendsService } from "./services/historical-trends-api";
 import { insertUserPreferencesSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -34,8 +35,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         weatherService.getCurrentWeather(),
       ]);
 
-      // Generate congestion forecast
+      // Generate congestion forecast with historical analysis
       const congestionForecast = await generateCongestionForecast();
+      
+      // Get historical trends analysis
+      const historicalTrends = historicalTrendsService.getTrendSummary();
 
       // Update storage
       await Promise.all([
@@ -46,6 +50,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         storage.updateAirportAlerts(airportAlerts),
         storage.updateCrowdTips(crowdTips),
         storage.updateWeatherData(weatherData),
+        storage.updateHistoricalTrends(historicalTrends),
       ]);
 
       const dashboardData = await storage.getDashboardData();
@@ -123,6 +128,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ]);
 
       const congestionForecast = await generateCongestionForecast();
+      
+      // Get historical trends analysis
+      const historicalTrends = historicalTrendsService.getTrendSummary();
 
       await Promise.all([
         storage.updateFlightDepartures(flightDepartures),
@@ -132,6 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         storage.updateAirportAlerts(airportAlerts),
         storage.updateCrowdTips(crowdTips),
         storage.updateWeatherData(weatherData),
+        storage.updateHistoricalTrends(historicalTrends),
       ]);
 
       console.log("Initial data loaded successfully");
@@ -218,10 +227,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-// AI-powered congestion forecast using FlightAware data, parking, and traffic patterns
+// Enhanced AI-powered congestion forecast using FlightAware data, historical trends, and multi-factor analysis
 async function generateCongestionForecast() {
   const now = new Date();
   const currentHour = now.getHours();
+  const currentDayOfWeek = now.getDay();
   const forecast = [];
   
   try {
@@ -233,20 +243,28 @@ async function generateCongestionForecast() {
     for (let i = 0; i < 12; i++) {
       const hour = (currentHour + i) % 24;
       
-      // Analyze flight traffic for this hour
+      // Get historical trend analysis for this specific hour/day combination
+      const historicalAnalysis = historicalTrendsService.analyzeTrendForHour(hour, currentDayOfWeek);
+      
+      // Analyze current conditions
       const flightTrafficScore = analyzeFlightTraffic(hour, flightData);
-      
-      // Analyze parking pressure
       const parkingPressureScore = analyzeParkingPressure(parkingData);
-      
-      // Analyze traffic conditions
       const trafficScore = analyzeTrafficConditions(trafficData);
       
-      // Calculate overall congestion score (0-100)
-      const congestionScore = Math.round(
+      // Calculate weighted congestion score with historical insights
+      const currentConditionsScore = Math.round(
         (flightTrafficScore * 0.5) + 
         (parkingPressureScore * 0.3) + 
         (trafficScore * 0.2)
+      );
+      
+      // Blend current conditions with historical predictions
+      const historicalWeight = Math.min(0.6, historicalAnalysis.confidence);
+      const currentWeight = 1 - historicalWeight;
+      
+      const congestionScore = Math.round(
+        (historicalAnalysis.predictedCongestion * historicalWeight) +
+        (currentConditionsScore * currentWeight)
       );
       
       let congestionLevel: string;
@@ -263,7 +281,7 @@ async function generateCongestionForecast() {
         congestionColor = "success";
       }
       
-      // Calculate flight count for this hour (simulate based on patterns)
+      // Calculate flight count with historical context
       const flightCount = calculateFlightCountForHour(hour, flightData);
       
       forecast.push({
@@ -273,6 +291,9 @@ async function generateCongestionForecast() {
         congestionColor,
         barHeight: congestionScore,
         flightCount,
+        historicalConfidence: Math.round(historicalAnalysis.confidence * 100),
+        historicalFactors: historicalAnalysis.factors,
+        recommendation: historicalAnalysis.recommendation
       });
     }
     
