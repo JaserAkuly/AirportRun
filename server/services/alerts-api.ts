@@ -16,7 +16,7 @@ export class AlertsService {
         title: "Terminal Roadway Construction",
         message: "Ongoing construction affecting Terminal A and B drop-off areas. Allow extra time for passenger pickup/drop-off. Use upper level for departures.",
         timestamp: "Updated 2 hours ago",
-        dismissible: false,
+        dismissible: 1,
         link: "https://www.dfwairport.com/construction"
       });
 
@@ -28,7 +28,7 @@ export class AlertsService {
           title: "Weather Advisory",
           message: "Monitoring weather conditions that may impact flight operations. Check with your airline for the latest flight status.",
           timestamp: "Updated 30 minutes ago",
-          dismissible: true
+          dismissible: 1
         });
       }
 
@@ -40,7 +40,7 @@ export class AlertsService {
           title: "Morning Peak Hours",
           message: "Experiencing high passenger volume. Security wait times may be longer than usual. TSA PreCheck recommended.",
           timestamp: "Updated 15 minutes ago",
-          dismissible: true
+          dismissible: 1
         });
       }
 
@@ -51,7 +51,7 @@ export class AlertsService {
           title: "Evening Rush Period",
           message: "Heavy departure traffic. Allow extra time for check-in, security, and transportation to the airport.",
           timestamp: "Updated 10 minutes ago",
-          dismissible: true
+          dismissible: 1
         });
       }
 
@@ -63,7 +63,7 @@ export class AlertsService {
           title: "High Travel Volume",
           message: "Increased weekend travel. Parking lots filling up quickly. Consider using remote parking with shuttle service.",
           timestamp: "Updated 1 hour ago",
-          dismissible: true
+          dismissible: 1
         });
       }
 
@@ -75,7 +75,7 @@ export class AlertsService {
           title: "Terminal Parking Nearly Full",
           message: "Terminal parking approaching capacity. Express and remote parking lots have availability with shuttle service to terminals.",
           timestamp: "Updated 20 minutes ago",
-          dismissible: true
+          dismissible: 1
         });
       }
 
@@ -87,7 +87,7 @@ export class AlertsService {
           title: "Mobile Check-in Recommended",
           message: "Faster processing with mobile boarding passes. Download your airline's app and check in 24 hours before departure.",
           timestamp: "Updated 3 hours ago",
-          dismissible: true
+          dismissible: 1
         });
       }
 
@@ -99,7 +99,7 @@ export class AlertsService {
           title: "Severe Weather Impact",
           message: "Thunderstorms in the area causing flight delays and cancellations. Contact your airline for rebooking options.",
           timestamp: "Updated 5 minutes ago",
-          dismissible: false,
+          dismissible: 0,
           link: "https://www.dfwairport.com/flight-status"
         });
       }
@@ -117,7 +117,7 @@ export class AlertsService {
           title: "System Notice",
           message: "Airport alert system temporarily unavailable. Please check with your airline for the latest flight information.",
           timestamp: "Just now",
-          dismissible: true
+          dismissible: 1
         }
       ];
     }

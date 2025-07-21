@@ -68,7 +68,7 @@ export default function FlightStatistics({
           </div>
           <div className="space-y-1">
             <p className="text-2xl font-bold text-gray-900">{cancellations}</p>
-            <p className="text-xs text-red-600">AA2847, DL1205, UA3452, WN7890, B61234</p>
+            <p className="text-xs text-red-600">American Airlines AA2847 (Engine), Delta DL1205 (Weather), United UA3452 (Crew), Southwest WN7890 (Maintenance), JetBlue B61234 (Air Traffic)</p>
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export default function FlightStatistics({
           </div>
           <div className="space-y-1">
             <p className="text-2xl font-bold text-gray-900">{totalFlights}</p>
-            <p className="text-xs text-blue-600">Top: American (142), Delta (89), United (76), Southwest (58)</p>
+            <p className="text-xs text-blue-600">American Airlines: 142 flights (31%), Delta: 89 flights (20%), United: 76 flights (17%), Southwest: 58 flights (13%)</p>
           </div>
         </div>
       </div>

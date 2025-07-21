@@ -40,10 +40,6 @@ export default function TrafficConditions({ data }: TrafficConditionsProps) {
           <Car className="text-primary mr-3 h-6 w-6" />
           Airport Traffic & Access
         </h2>
-        <div className="text-sm text-gray-500 flex items-center">
-          <div className="w-2 h-2 bg-primary rounded-full mr-1" />
-          <span>Live</span>
-        </div>
       </div>
       
       <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50">
